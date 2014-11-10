@@ -1,7 +1,18 @@
 doctype html
-html
+html(lang='zh')
   head
+    meta(charset='utf-8')
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(name='keywords', contetn= keywords)
+    meta(name='description', content= description)
+    link(rel='stylesheet', href='/bower/bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='stylesheets/style.css')
+    link(rel='shortcut icon', href='images/favicon.ico')
+    script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
+    script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
+    script(type='text/javascript', src='javascripts/scripts.js')
+          
+
   body
     block content
