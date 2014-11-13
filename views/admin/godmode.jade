@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  .container
+    .col-md-4.column
+    .col-md-4.column
+      h1 GodMode
+      p.lead Register you first admin account.
+      br
+      form(role='form', action="/tellusadmin/godmode",method="post")
+        .form-group
+          input.form-control(type='text', name="username", placeholder='Enter your email address')
+        .form-group
+          input.form-control(type='password', name="password", placeholder='Password')
+        a(href='/tellusadmin')
+          button.btn.btn-default.pull-left(type="button") Cancel
+        button.btn.btn-primary.pull-right(type='submit') Submit
+    .col-md-4.column
