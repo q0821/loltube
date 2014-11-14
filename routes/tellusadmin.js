@@ -25,9 +25,14 @@ router.post('/', passport.authenticate('local', {
 router.get('/index', function(req, res){
   if(req.user){
     console.log('user promission: ' + req.user.promission);
-    res.end('welcome to the admin panel ' + req.user.username + ', you promission is ' + req.user.promission);
+    res.render('admin/index', {
+      title: '管理區 - 首頁',
+      username: req.user.name,
+      promission: req.user.promission
+    });
   }
   else{
+    res.redirect('/tellusadmin');
     res.end('sorry, you don\'t have the promission');
   }
 })

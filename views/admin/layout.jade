@@ -11,7 +11,22 @@ html(lang='zh')
     script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
     script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
     script(type='text/javascript', src='/javascripts/scripts.js')
-          
-
+    
   body
-    block content
+    .container
+      block menu
+        .row.clearfix
+          .col-md-12.column
+            ul.nav.nav-pills
+              li.active
+                a(href='#') Home
+              li.disabled
+                a(href='#') Items
+              li.disabled
+                a(href='#') Menus
+              li
+                a(href='#') Tags
+              li.navbar-right
+                a(href='#') Logout
+
+      block content
