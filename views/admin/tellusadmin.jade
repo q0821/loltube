@@ -3,9 +3,7 @@ extends ./layout
 block menu
 block content
   .row
-    .col-md-4.column
-    .col-md-4.column
-      h1 管理區
+    .col-md-12.column
       p.lead 請輸入您的管理Email與密碼
       br
       form(role='form', action='/tellusadmin', method='post')
@@ -17,4 +15,3 @@ block content
         if godmode 
           a(href='/tellusadmin/godmode')
             button.btn.btn-default.pull-left(type='button') Register
-    .col-md-4.column

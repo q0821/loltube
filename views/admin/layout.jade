@@ -18,15 +18,24 @@ html(lang='zh')
         .row.clearfix
           .col-md-12.column
             ul.nav.nav-pills
-              li.active
-                a(href='#') Home
+              li
+                a(href='index') Home
               li.disabled
                 a(href='#') Items
               li.disabled
                 a(href='#') Menus
               li
-                a(href='#') Tags
+                a(href='tags') Tags
               li.navbar-right
-                a(href='#') Logout
+                a(href='/logout') Logout
 
+      block title
+        .row.clearfix
+          .col-md-12.column
+            h1= title
+
+      block message
+        .row.clearfix
+          .col-md-12.column
+            .alert(role='alert')
       block content
