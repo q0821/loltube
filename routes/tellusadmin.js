@@ -22,16 +22,20 @@ router.post('/', passport.authenticate('local', {
   failureRedirect: '/tellusadmin'  
 }));
 
-router.get('/index', function(req, res){
-  if(req.user){
-    console.log('user promission: ' + req.user.promission);
-    res.end('welcome to the admin panel ' + req.user.username + ', you promission is ' + req.user.promission);
-  }
-  else{
-    res.end('sorry, you don\'t have the promission');
-  }
+router.get('/index', isAuth, function(req, res){
+  console.log('user promission: ' + req.user.promission);
+  res.render('admin/index', {
+    title: '管理區 - 首頁',
+    username: req.user.name,
+    promission: req.user.promission
+  });
 })
 
+router.get('/tags', isAuth, function(req, res){
+    res.render('admin/tags', {
+      title: "管理區 - Tags"  
+    });    
+});
 
 router.get('/godmode', function(req, res){
   if(!godmode){
@@ -61,5 +65,13 @@ router.post('/godmode', function(req, res){
     });
   });    
 })
+
+
+function isAuth(req, res, next){
+  if(req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/tellusadmin');
+}
 
 module.exports = router;
