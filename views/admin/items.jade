@@ -1,8 +1,5 @@
 extends ./layout
 
-block scripts
-  script(type='text/javascript', src='/javascripts/tags.js')
-
 block content
   .row.clearfix
     .col-md-12.column
@@ -20,10 +17,4 @@ block content
             em.glyphicon.glyphicon-trash
             |  刪除
   .row.clearfix
-    .col-md-9.column#newTagName
-      input(type='text', class='form-control')
-    .col-md-3.column#saveTag
-      button.btn.btn-default(type='button')
-        em.gluphicon.glyphicon-plus
-        | 新增
     .col-md-12.column#tagList

@@ -33,13 +33,13 @@ router.get('/index', isAuth, function(req, res){
 
 router.get('/tags', isAuth, function(req, res){
     res.render('admin/tags', {
-      title: "管理區 - Tags"  
+      title: "管理區 - Tags"
     });    
 });
 
 router.get('/godmode', function(req, res){
   if(!godmode){
-    res.redirect(401, '/');
+    res.redirect(401, '/tellusadmin');
     return;
   }
   res.render('admin/godmode');
