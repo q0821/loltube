@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www",
+    "postinstall": "bower install",
+    "prestart": "npm install",
+    "start": "nodemon ./bin/www -i ./public/",
     "godmode": "nodemon ./bin/www godmode"
   },
   "dependencies": {

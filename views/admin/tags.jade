@@ -4,26 +4,36 @@ block scripts
   script(type='text/javascript', src='/javascripts/tags.js')
 
 block content
-  .row.clearfix
+  .row.clearfix#tagContainer
     .col-md-12.column
-      .btn-group#subMenu
-        a(href='#')
-          button.btn.btn-default(type='button')
-            em.glyphicon.glyphicon-plus
-            |  新增
-        a(href='#')
-          button.btn.btn-default(type='button')
-            em.glyphicon.glyphicon-tags
-            |  複製
-        a(href='#')
-          button.btn.btn-default(type='button')
-            em.glyphicon.glyphicon-trash
-            |  刪除
-  .row.clearfix
-    .col-md-9.column#newTagName
-      input(type='text', class='form-control')
-    .col-md-3.column#saveTag
-      button.btn.btn-default(type='button')
-        em.gluphicon.glyphicon-plus
-        | 新增
-    .col-md-12.column#tagList
+      #messageBox
+    .col-md-12.column
+      .input-group
+        input(type='text', class='form-control', name='newTagName')
+        span.input-group-btn
+          button.btn.btn-default#newTagBtn(type='button')
+            em.gluphicon.glyphicon-plus
+            | 新增
+    .col-md-12.column
+      table.table.table-hover
+        thead
+          tr
+            th
+            th #
+            th
+              a#orderByName(href='#') name
+            th _id
+        tbody#tagList
+
+block backboneTemplate
+  script#tmplTagList(type='text/template')
+    | <tr>
+    |   <td><input type="checkbox", name="index[]", val="<%= num %>" /></td>
+    |   <td><%= num %></td>
+    |   <td><%= name %></td>
+    |   <td><%= id %></td>
+    | </tr>
+  script#tmplMessage(type='text/template')
+    p.<%= classType %>
+      strong <%= type %>
+

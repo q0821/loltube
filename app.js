@@ -32,20 +32,23 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser(config.cookie_secret));
-app.use(session({secret: config.cookie_secret, resave: true, saveUninitialized: true}));
+app.use(session({secret: config.cookieSecret, resave: true, saveUninitialized: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower', express.static(path.join(__dirname, 'bower_components')));
 
+// middleware for all routing
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  next();
+});
 
 // Routing
-var routes = require('./routes/index');
-var users = require('./routes/users');
 var tags = require('./routes/tags');
 var tellusadmin = require('./routes/tellusadmin');
-app.use('/', routes);
-app.use('/users', users);
 app.use('/tags', tags);
 app.use('/tellusadmin', tellusadmin);
 app.get('/logout', function(req, res){

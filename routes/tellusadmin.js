@@ -37,19 +37,11 @@ router.get('/tags', isAuth, function(req, res){
     });    
 });
 
-router.get('/godmode', function(req, res){
-  if(!godmode){
-    res.redirect(401, '/tellusadmin');
-    return;
-  }
+router.get('/godmode', isGodmode, function(req, res){
   res.render('admin/godmode');
 });
 
-router.post('/godmode', function(req, res){
-  if(!godmode){
-    res.redirect('/');
-    return;
-  }
+router.post('/godmode', isGodmode, function(req, res){
   Account.register(new Account({ 
     username : req.body.username,
     promission : 1, 
@@ -72,6 +64,13 @@ function isAuth(req, res, next){
     return next();
   }
   res.redirect('/tellusadmin');
+}
+
+function isGodmode(req, res, next){
+  if(godmode)
+    return next();
+  else
+    res.redirect(401, '/tellusadmin');
 }
 
 module.exports = router;
