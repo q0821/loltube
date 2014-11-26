@@ -1,5 +1,6 @@
 # Config
-config
+config/
+!config/config.example.js
 
 # Logs
 logs
