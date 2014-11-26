@@ -32,7 +32,8 @@ app.TagView = Backbone.View.extend({
   el: '#tagContainer',
   events:{
     'click #newTagBtn': 'addNewTag',
-    'click #orderByName': 'orderByName'
+    'click .reorder': 'reorder',
+    'click .editTag': 'editTag'
   },
   addNewTag: function(){
     var self = this;
@@ -43,18 +44,24 @@ app.TagView = Backbone.View.extend({
       self.collection.add(newTag, {at: 0});
     });
   },
-  orderByName: function(){
+  editTag: function(e){
+    var edittingID = $(e.currentTarget).data('id');
+    alert('editting ' + edittingID);
+  },
+  reorder: function(e){
+    var newComparator = $(e.currentTarget).data('by');
+    console.log(newComparator);
     var reverser;
-    if(this.collection.lastOrder === 'name'){
-      this.collection.lastOrder = '-name';
+    if(this.collection.lastOrder === newComparator){
+      this.collection.lastOrder = -newComparator;
       reverser = -1;
     } else {
-      this.collection.lastOrder = 'name';
+      this.collection.lastOrder = newComparator;
       reverser = 1;
     }
 
     this.collection.comparator = function(tag1, tag2){
-      return tag1.get('name').toLowerCase()>tag2.get('name').toLowerCase()?reverser:-reverser;
+      return tag1.get(newComparator).toLowerCase()>tag2.get(newComparator).toLowerCase()?reverser:-reverser;
     }
     this.collection.sort();
   },
@@ -67,7 +74,9 @@ app.TagView = Backbone.View.extend({
       data += self.template({
         num: num,
         name: tag.get('name'),  
-        id: tag.get('_id')
+        id: tag.get('_id'),
+        lastModifier: tag.get('lastModifier'),
+        lastModified: (new Date(tag.get('lastModified'))).toDateString()
       });
     });
 
@@ -78,7 +87,6 @@ app.TagView = Backbone.View.extend({
     var self = this;
     this.model = new app.TagModel();
     this.collection = new app.TagCollection();
-    this.collection.bind('sort add', this.render, this);
     this.collection.fetch({
       success: function(collection, res){
         self.render();
@@ -88,7 +96,7 @@ app.TagView = Backbone.View.extend({
       },
       reset: true
     });
-    //this.listenTo(this.collection, 'sort', this.render);
+    this.listenTo(this.collection, 'sort', this.render);
     this.template = _.template($('#tmplTagList').html());
     this.messageTemplate = _.template($('#tmplMessage').html());
   }

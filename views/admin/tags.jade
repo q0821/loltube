@@ -21,19 +21,24 @@ block content
             th
             th #
             th
-              a#orderByName(href='#') name
-            th _id
+              a.reorder(href='#', data-by='name') name
+            th 
+              a.reorder(href='#', data-by='lastModifier') lastModifier
+            th
+              a.reorder(href='#', data-by='lastModified') lastModified
         tbody#tagList
 
 block backboneTemplate
   script#tmplTagList(type='text/template')
     | <tr>
-    |   <td><input type="checkbox", name="index[]", val="<%= num %>" /></td>
+    |   <td><input type="checkbox", name="index[]", val="<%= id %>" /></td>
     |   <td><%= num %></td>
-    |   <td><%= name %></td>
-    |   <td><%= id %></td>
+    |   <td><a class="editTag" href="#" data-id="<%= id %>"><%= name %></a></td>
+    |   <td><%= lastModifier %></td>
+    |   <td><%= lastModified %></td>
     | </tr>
   script#tmplMessage(type='text/template')
-    p.<%= classType %>
-      strong <%= type %>
+    | <p><%= classType %></p>
+    | <strong><%= type %></strong>
+    | <%= message %>
 
