@@ -6,17 +6,19 @@ html(lang='zh')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     meta(name='keywords', contetn= keywords)
     meta(name='description', content= description)
+    script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
+    script(type='text/javascript', src='/bower/underscore/underscore-min.js')
+    script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
+    script(type='text/javascript', src='/bower/backbone/backbone.js')
+    script(type='text/javascript', src='/javascripts/scripts.js')
     link(rel='stylesheet', href='/bower/bootstrap/dist/css/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
-    script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
-    script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
-    script(type='text/javascript', src='/javascripts/scripts.js')
-    
+    block scripts
   body
     .container
       block menu
         .row.clearfix
-          .col-md-12.column
+          .col-md-12.column#mainMenu
             ul.nav.nav-pills
               li
                 a(href='index') Home
@@ -34,8 +36,6 @@ html(lang='zh')
           .col-md-12.column
             h1= title
 
-      block message
-        .row.clearfix
-          .col-md-12.column
-            .alert(role='alert')
       block content
+
+    block backboneTemplate

@@ -1,13 +1,59 @@
 extends ./layout
 
+block scripts
+  script(type='text/javascript', src='/javascripts/tags.js')
+
 block content
-  .btn-group
-    button.btn.btn-default(type='button')
-      em.glyphicon.glyphicon-plus
-      |  新增
-    button.btn.btn-default(type='button')
-      em.glyphicon.glyphicon-tags
-      |  複製
-    button.btn.btn-default(type='button')
-      em.glyphicon.glyphicon-trash
-      |  刪除
+  .row.clearfix#tagContainer
+    .col-md-12.column
+      #messageBox
+    .col-md-1.column
+      span.input-group-btn
+        button.btn.btn-default#copyTag(type='button')
+          em.glyphicon.glyphicon-tags
+          | 　複製
+    .col-md-1.column
+      span.input-group-btn
+        button.btn.btn-default#delTag(type='button')
+          em.glyphicon.glyphicon-trash
+          | 　刪除
+    .col-md-10.column
+      .input-group
+        input(type='text', class='form-control', name='newTagName')
+        span.input-group-btn
+          button.btn.btn-default#newTagBtn(type='button')
+            em.glyphicon.glyphicon-plus
+            | 　新增
+    .col-md-12.column
+      table.table.table-hover
+        thead
+          tr
+            th
+              input(type='checkbox', name='selectAll')          
+            th #
+            th
+              a.reorder(href='#', data-by='name') name
+            th 
+              a.reorder(href='#', data-by='lastModifier') lastModifier
+            th
+              a.reorder(href='#', data-by='lastModified') lastModified
+        tbody#tagList
+
+block backboneTemplate
+  script#tmplTagList(type='text/template')
+    | <tr>
+    |   <td><input type="checkbox", name="index[]", val="<%= id %>" /></td>
+    |   <td><%= num %></td>
+    |   <td><a class="editTag" href="#" data-id="<%= id %>"><%= name %></a></td>
+    |   <td><%= lastModifier %></td>
+    |   <td><%= lastModified %></td>
+    | </tr>
+  script#tmplMessage(type='text/template')
+    | <div class="alert alert-dismissible alert-<%= type %>" role="alert">
+    | <button type="button" class="close" data-dismiss="alert">
+    |   <span aria-hidden="true">&times;</span>
+    |   <span class="sr-only">Close</span>
+    | </button>
+    | <strong><%= type.toUpperCase() %>! </strong>
+    | <%= message %>
+

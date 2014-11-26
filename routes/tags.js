@@ -4,24 +4,34 @@ var express = require('express');
 var router = express.Router();
 var Tag = require('../models/tag');
 
+// Request all tags
 router.get('/', function(req, res){
-  Tag.find({}, function(err, results){
+  var order = req.query.o ? req.query.o : '-lastModified';
+  Tag.find({}).sort(order).exec(function(err, results){
     if(err) {
       res.status(400).json({ 
-        error: err.message, 
-        message: {
-          type: "error",
-          content: "get tag list error"
-        }
+        message: "get tag list error"
+      });
+    } else {
+      res.status(200).json(results);
+    }
+  });  
+});
+
+// Request tags by page
+router.get('/page/:page_index', function(req, res){
+  var order = req.query.o ? req.query.o : 'name';
+  var perPage = req.query.p ? parseInt(req.query.p) : 50; 
+  var pageIndex = req.params.page_index;
+  Tag.find({}).sort(order).skip((pageIndex-1)*perPage).limit(perPage).exec(function(err, results){
+    if(err) {
+      res.status(400).json({ 
+        message: "get tag list error"
       });
     } else {
       res.status(200).json({ 
-        message: { 
-          type: "success", 
-          content: "get tag list success"
-        }, 
-        result: 
-          results
+        message: "get tag list success", 
+        result: results
       });
     }
   });  
@@ -32,18 +42,11 @@ router.get('/:tag_id', function(req, res){
   Tag.find({ _id: tag_id}, function(err, results){
     if(err) {
       res.status(400).json({ 
-        error: err.message, 
-        message: {
-          type: "error",
-          content: "get tag from tag_id error" 
-        }
+        message: "get tag from tag_id error"
       });
     } else {
       res.status(200).json({ 
-        message: {
-          type: "success",
-          content: "get tag from tag_id success"
-        },
+        message: "get tag from tag_id success",
         result: results
       });
     }
@@ -60,17 +63,18 @@ router.post('/', function(req, res){
   tag.save(function(err){
     if(err){
       res.status(400).json({ 
-        error: err.message, 
-        message: {
-          type: "success",
-          content: "insert tag error"
-        }
+        message: "insert tag error"
       });
     } else {
-      res.status(201).json({
-        message: {
-          type: "success", 
-          content: "insert tag success"
+      Tag.findOne(tag, function(err, result){
+        if(err){          
+          res.status(400).json({
+            message: "some known error.."
+          });
+        } else {
+          res.status(201).json({
+            _id: result._id
+          });
         }
       });
     }
@@ -91,19 +95,12 @@ router.put('/:tag_id', function(req, res){
     function(err, num, raw, results) {
       if(err){
         res.status(400).json({
-          error: err.message, 
-          message: {
-            type: "error",
-            content: "update tag error"
-          }
+          message: "update tag error"
         });
       } else {
         Tag.find({ _id: tag_id}, function(err, results){
           res.status(201).json({ 
-            message: {
-              type: "success", 
-              content: "update db success"
-            }, 
+            message: "update db success",
             result: results
           });  
         })
@@ -118,18 +115,11 @@ router.delete('/:tag_id', function(req, res){
   Tag.remove({ _id:tag_id }, function(err){
     if(err){
       res.status(400).json({ 
-        error: err.message, 
-        message: {
-          type: "error", 
-          content: "remove tag error"
-        }
+        message: "remove tag error"
       });
     } else {
       res.status(201).json({ 
-        message: {
-          type: "success",
-          content: "remove tag success"
-        }
+        message: "remove tag success"
       });
     }
   });  
