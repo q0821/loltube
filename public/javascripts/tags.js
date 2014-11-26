@@ -53,7 +53,7 @@ app.TagView = Backbone.View.extend({
   filter: function(){
     var filter = this.$el.find('#newTagName').val();
     this.collection.reset(this.oriCollection.filter(function(tag){
-      return tag.get('name').indexOf(filter,0)>-1? true:false;
+      return tag.get('name').indexOf(filter,0)>-1 || tag.get('lastModifier').indexOf(filter,0)>-1;
     }));
   },
   addNewTag: function(){
