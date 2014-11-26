@@ -8,6 +8,15 @@ var app = app || {};
 /*
  * Models & Collections
  */
+app.MessageModel = Backbone.Model.extend({
+  defaults:{    
+    message: {
+      type: 'success',
+      content: 'init success'
+    }
+  }  
+});
+
 app.TagModel = Backbone.Model.extend({
   urlRoot: '/tags',
   idAttribute: '_id',
@@ -21,9 +30,12 @@ app.TagModel = Backbone.Model.extend({
 app.TagCollection = Backbone.Collection.extend({
   model: app.TagModel, 
   url: '/tags',
-  lastOrder: ''
+  initialize: function(){
+    var self = this;
+    this.lastOrder = '';
+    this.url = '/tags';
+  }
 });   
-
 
 /*
  * Views
@@ -33,21 +45,51 @@ app.TagView = Backbone.View.extend({
   events:{
     'click #newTagBtn': 'addNewTag',
     'click .reorder': 'reorder',
-    'click .editTag': 'editTag'
+    'click .editTag': 'editTag',
+    'click #delTag': 'delTag',
+    'keyup #newTagName': 'filter',
+    'change #newTagName': 'filter'
+  },
+  filter: function(){
+    var filter = this.$el.find('#newTagName').val();
+    this.collection.reset(this.oriCollection.filter(function(tag){
+      return tag.get('name').indexOf(filter,0)>-1? true:false;
+    }));
   },
   addNewTag: function(){
     var self = this;
     var newTag = new app.TagModel({
-      name: this.$el.find('input[name="newTagName"]').val()
+      name: this.$el.find('#newTagName').val()
     });
     newTag.save().done(function(){
       self.collection.add(newTag, {at: 0});
-      self.renderMessage('warning', 'Add a new tag');
+      self.oriCollection.add(newTag);
+      self.messageModel.set('message', { type: 'success', content: 'Add a new tag to server.'});
+      self.$el.find('#newTagName').val('');
     });
   },
   editTag: function(e){
     var edittingID = $(e.currentTarget).data('id');
-    alert('editting ' + edittingID);
+    alert('editting ' + this.collection.get(edittingID).get('name'));
+  },
+  delTag: function(){
+    var self = this;
+    var del = this.$el.find('input[name="index[]"]:checked');
+    var success = true;
+    var deletingTag;
+    del.each(function(){
+      deletingTag = self.collection.get($(this).val());
+      if(deletingTag){
+        deletingTag.destroy({
+          success: function(){},
+          error: function(){ success = false;}  
+        });
+      } else {
+        success = false;
+        self.messageModel.set('message', { type:'danger', content:'Error with deleting tags'});
+      }
+      return success;
+    });
   },
   reorder: function(e){
     var newComparator = $(e.currentTarget).data('by');
@@ -83,29 +125,34 @@ app.TagView = Backbone.View.extend({
     this.$el.find('#tagList').html(data);
     return this;
   },
-  renderMessage: function(type, message){
+  renderMessage: function(){
     // 4 different types for message: success, info, warning, danger
+    var message = this.messageModel.get('message');
     var data = this.messageTemplate({
-      type: type,
-      message: message
+      type: message.type,
+      content: message.content
     });
     this.$el.find('#messageBox').html(data);
   },
   initialize: function(){
     var self = this;
     this.model = new app.TagModel();
+    this.messageModel = new app.MessageModel();
+    this.oriCollection = new Backbone.Collection();
     this.collection = new app.TagCollection();
     this.collection.fetch({
       success: function(collection, res){
         self.render();
-        self.renderMessage('success', 'get tag list success');
+        self.oriCollection = new Backbone.Collection(self.collection.models);
       },
       error: function(){
-        self.renderMessage('danger', 'some error with getting tag from server');
+        self.messageModel.set('message', { type: 'danger', content: 'some error with getting tag list from server'});
       },
       reset: true
     });
-    this.listenTo(this.collection, 'sort add', this.render);
+    
+    this.listenTo(this.collection, 'reset add remove sort', this.render, this);
+    this.listenTo(this.messageModel, 'change', this.renderMessage, this);
     this.template = _.template($('#tmplTagList').html());
     this.messageTemplate = _.template($('#tmplMessage').html());
   }
