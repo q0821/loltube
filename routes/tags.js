@@ -6,17 +6,13 @@ var Tag = require('../models/tag');
 
 // Request all tags
 router.get('/', function(req, res){
-  var order = req.query.o ? req.query.o : '';
+  var order = req.query.o ? req.query.o : '-lastModified';
   Tag.find({}).sort(order).exec(function(err, results){
     if(err) {
       res.status(400).json({ 
         message: "get tag list error"
       });
     } else {
-      //res.status(200).json({ 
-      //  message: "get tag list success", 
-      //  result: results
-      //});
       res.status(200).json(results);
     }
   });  

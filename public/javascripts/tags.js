@@ -42,6 +42,7 @@ app.TagView = Backbone.View.extend({
     });
     newTag.save().done(function(){
       self.collection.add(newTag, {at: 0});
+      self.renderMessage('warning', 'Add a new tag');
     });
   },
   editTag: function(e){
@@ -50,7 +51,6 @@ app.TagView = Backbone.View.extend({
   },
   reorder: function(e){
     var newComparator = $(e.currentTarget).data('by');
-    console.log(newComparator);
     var reverser;
     if(this.collection.lastOrder === newComparator){
       this.collection.lastOrder = -newComparator;
@@ -83,6 +83,14 @@ app.TagView = Backbone.View.extend({
     this.$el.find('#tagList').html(data);
     return this;
   },
+  renderMessage: function(type, message){
+    // 4 different types for message: success, info, warning, danger
+    var data = this.messageTemplate({
+      type: type,
+      message: message
+    });
+    this.$el.find('#messageBox').html(data);
+  },
   initialize: function(){
     var self = this;
     this.model = new app.TagModel();
@@ -90,13 +98,14 @@ app.TagView = Backbone.View.extend({
     this.collection.fetch({
       success: function(collection, res){
         self.render();
+        self.renderMessage('success', 'get tag list success');
       },
       error: function(){
-        alert('error');
+        self.renderMessage('danger', 'some error with getting tag from server');
       },
       reset: true
     });
-    this.listenTo(this.collection, 'sort', this.render);
+    this.listenTo(this.collection, 'sort add', this.render);
     this.template = _.template($('#tmplTagList').html());
     this.messageTemplate = _.template($('#tmplMessage').html());
   }
