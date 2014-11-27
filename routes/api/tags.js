@@ -69,12 +69,13 @@ router.post('/', function(req, res){
       Tag.findOne(tag, function(err, result){
         if(err){          
           res.status(400).json({
-            message: "some known error.."
+            message: "some unknown error.."
           });
         } else {
+          //res.status(400).end('same tag name');
           res.status(201).json({
             _id: result._id
-          });
+          });          
         }
       });
     }

@@ -26,8 +26,7 @@ app.TagModel = Backbone.Model.extend({
     lastModified: Date.now()
   },
   validate: function(attrs, option){
-//    if (app.tagView.collection.findWhere({name: attrs.name}))
-//      return '已存在相同名稱的Tag';
+    //return '已存在相同名稱的Tag: ' + attrs.name;
   },
   initialize: function(){
     this.bind('invalid', function(model, error){
@@ -61,7 +60,6 @@ app.TagView = Backbone.View.extend({
   },
   filter: function(){
     var filter = this.$el.find('#newTagName').val();
-    console.log('filter: ' + filter);
     this.collection.reset(this.oriCollection.filter(function(tag){
       return tag.get('name').indexOf(filter,0)>-1 || tag.get('lastModifier').indexOf(filter,0)>-1;
     }));
@@ -81,8 +79,11 @@ app.TagView = Backbone.View.extend({
         self.$el.find('#newTagName').val('');
         self.filter();
     },
-      error: function(){
-        self.messageModel.set('message', { type: 'danger', content: 'Error with add a new tag to server.'});
+      error: function(model, res, option){
+        console.log(model);
+        console.log(res);
+        console.log(option);
+        self.messageModel.set('message', { type: 'danger', content: 'Error with add a new tag to server.' + res._id});
     }    
     });
 

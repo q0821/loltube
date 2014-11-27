@@ -1,6 +1,6 @@
 extends ./layout
 
-block scripts
+block append scripts
   script(type='text/javascript', src='/javascripts/tags.js')
 
 block content
@@ -41,19 +41,17 @@ block content
 
 block backboneTemplate
   script#tmplTagList(type='text/template')
-    | <tr>
-    |   <td><input type="checkbox", name="index[]", value="<%= id %>" /></td>
-    |   <td><%= num %></td>
-    |   <td><a class="editTag" href="#" data-id="<%= id %>"><%= name %></a></td>
-    |   <td><%= lastModifier %></td>
-    |   <td><%= lastModified %></td>
-    | </tr>
+    tr
+      td: input(type='checkbox', name='index[]', value!='<%= id %>')
+      td <%= num %>
+      td: a.editTag(href='#', data-id!='<%= id %>') <%= name %>
+      td <%= lastModifier %>
+      td <%= lastModified %>
   script#tmplMessage(type='text/template')
-    | <div class="alert alert-dismissible alert-<%= type %>" role="alert">
-    | <button type="button" class="close" data-dismiss="alert">
-    |   <span aria-hidden="true">&times;</span>
-    |   <span class="sr-only">Close</span>
-    | </button>
-    | <strong><%= type.toUpperCase() %>! </strong>
-    | <%= content %>
+    .alert.alert-dismissible(class!='alert-<%= type %>' role='alert')
+      button.close(type='button', data-dismiss='alert')
+        span(aria-hidden='true') &times;
+        span.sr-only Close
+      strong <%= type.toUpperCase() %>!
+      |&nbsp;&nbsp;<%= content %>
 

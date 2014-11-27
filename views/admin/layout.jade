@@ -6,14 +6,15 @@ html(lang='zh')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     meta(name='keywords', contetn= keywords)
     meta(name='description', content= description)
-    script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
-    script(type='text/javascript', src='/bower/underscore/underscore-min.js')
-    script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
-    script(type='text/javascript', src='/bower/backbone/backbone.js')
-    script(type='text/javascript', src='/javascripts/users.js')
-    link(rel='stylesheet', href='/bower/bootstrap/dist/css/bootstrap.min.css')
-    link(rel='stylesheet', href='/stylesheets/style.css')
     block scripts
+      script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
+      script(type='text/javascript', src='/bower/underscore/underscore-min.js')
+      script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
+      script(type='text/javascript', src='/bower/backbone/backbone.js')
+      script(type='text/javascript', src='/javascripts/users.js')
+    block stylesheets
+      link(rel='stylesheet', href='/bower/bootstrap/dist/css/bootstrap.min.css')
+      link(rel='stylesheet', href='/stylesheets/style.css')
   body
     .container
       block menu

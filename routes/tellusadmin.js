@@ -33,7 +33,8 @@ router.get('/index', isAuth, function(req, res){
 
 router.get('/tags', isAuth, function(req, res){
     res.render('admin/tags', {
-      title: "管理區 - Tags"
+      title: "管理區 - Tags",
+      username: req.user.username
     });    
 });
 
