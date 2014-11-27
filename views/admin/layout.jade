@@ -10,7 +10,7 @@ html(lang='zh')
     script(type='text/javascript', src='/bower/underscore/underscore-min.js')
     script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
     script(type='text/javascript', src='/bower/backbone/backbone.js')
-    script(type='text/javascript', src='/javascripts/scripts.js')
+    script(type='text/javascript', src='/javascripts/users.js')
     link(rel='stylesheet', href='/bower/bootstrap/dist/css/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
     block scripts
@@ -28,7 +28,7 @@ html(lang='zh')
                 a(href='#') Menus
               li
                 a(href='tags') Tags
-              li.navbar-right
+              li.navbar-right#accountContainer
                 a(href='/logout') Logout
 
       block title

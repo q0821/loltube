@@ -5,8 +5,6 @@ block scripts
 
 block content
   .row.clearfix#tagContainer
-    .col-md-12.column
-      #messageBox
     .col-md-1.column
       span.input-group-btn
         button.btn.btn-default#copyTag(type='button')
@@ -19,11 +17,13 @@ block content
           | 　刪除
     .col-md-10.column
       .input-group
-        input(type='text', class='form-control', name='newTagName')
+        input(type='text', class='form-control', id='newTagName', autocomplete='off')
         span.input-group-btn
           button.btn.btn-default#newTagBtn(type='button')
             em.glyphicon.glyphicon-plus
             | 　新增
+    .col-md-12.column
+      #messageBox
     .col-md-12.column
       table.table.table-hover
         thead
@@ -42,7 +42,7 @@ block content
 block backboneTemplate
   script#tmplTagList(type='text/template')
     | <tr>
-    |   <td><input type="checkbox", name="index[]", val="<%= id %>" /></td>
+    |   <td><input type="checkbox", name="index[]", value="<%= id %>" /></td>
     |   <td><%= num %></td>
     |   <td><a class="editTag" href="#" data-id="<%= id %>"><%= name %></a></td>
     |   <td><%= lastModifier %></td>
@@ -55,5 +55,5 @@ block backboneTemplate
     |   <span class="sr-only">Close</span>
     | </button>
     | <strong><%= type.toUpperCase() %>! </strong>
-    | <%= message %>
+    | <%= content %>
 

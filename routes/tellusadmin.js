@@ -26,7 +26,7 @@ router.get('/index', isAuth, function(req, res){
   console.log('user promission: ' + req.user.promission);
   res.render('admin/index', {
     title: '管理區 - 首頁',
-    username: req.user.name,
+    username: req.user.username,
     promission: req.user.promission
   });
 })

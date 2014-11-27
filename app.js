@@ -47,9 +47,9 @@ app.use(function(req, res, next) {
 });
 
 // Routing
-var tags = require('./routes/tags');
+var tags = require('./routes/api/tags');
 var tellusadmin = require('./routes/tellusadmin');
-app.use('/tags', tags);
+app.use('/api/tags', tags);
 app.use('/tellusadmin', tellusadmin);
 app.get('/logout', function(req, res){
   req.logout();
