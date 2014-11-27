@@ -22,8 +22,17 @@ app.TagModel = Backbone.Model.extend({
   idAttribute: '_id',
   defaults: {
     name: 'default name',
-    lastModifier: 'system',
+    lastModifier: '',
     lastModified: Date.now()
+  },
+  validate: function(attrs, option){
+//    if (app.tagView.collection.findWhere({name: attrs.name}))
+//      return '已存在相同名稱的Tag';
+  },
+  initialize: function(){
+    this.bind('invalid', function(model, error){
+      app.tagView.messageModel.set('message', { type: 'danger', content: 'Error: '+error});
+    });
   }
 });
 
@@ -52,21 +61,31 @@ app.TagView = Backbone.View.extend({
   },
   filter: function(){
     var filter = this.$el.find('#newTagName').val();
+    console.log('filter: ' + filter);
     this.collection.reset(this.oriCollection.filter(function(tag){
       return tag.get('name').indexOf(filter,0)>-1 || tag.get('lastModifier').indexOf(filter,0)>-1;
     }));
   },
   addNewTag: function(){
     var self = this;
-    var newTag = new app.TagModel({
-      name: this.$el.find('#newTagName').val()
+    this.model.clear();
+    this.model.save({
+      name: this.$el.find('#newTagName').val(),
+      lastModified: Date.now(),
+      lastModifier: 'system'
+    },{ 
+      success: function(model, res){
+        self.collection.add(model, {at: 0});
+        self.oriCollection.add(model, {at: 0});
+        self.messageModel.set('message', { type: 'success', content: 'Add a new tag to server.'});
+        self.$el.find('#newTagName').val('');
+        self.filter();
+    },
+      error: function(){
+        self.messageModel.set('message', { type: 'danger', content: 'Error with add a new tag to server.'});
+    }    
     });
-    newTag.save().done(function(){
-      self.collection.add(newTag, {at: 0});
-      self.oriCollection.add(newTag);
-      self.messageModel.set('message', { type: 'success', content: 'Add a new tag to server.'});
-      self.$el.find('#newTagName').val('');
-    });
+
   },
   editTag: function(e){
     var edittingID = $(e.currentTarget).data('id');
