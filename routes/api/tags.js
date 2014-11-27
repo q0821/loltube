@@ -2,7 +2,7 @@
 
 var express = require('express');
 var router = express.Router();
-var Tag = require('../models/tag');
+var Tag = require('../../models/tag');
 
 // Request all tags
 router.get('/', function(req, res){

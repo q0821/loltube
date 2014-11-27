@@ -18,7 +18,7 @@ app.MessageModel = Backbone.Model.extend({
 });
 
 app.TagModel = Backbone.Model.extend({
-  urlRoot: '/tags',
+  urlRoot: '/api/tags',
   idAttribute: '_id',
   defaults: {
     name: 'default name',
@@ -38,11 +38,11 @@ app.TagModel = Backbone.Model.extend({
 
 app.TagCollection = Backbone.Collection.extend({
   model: app.TagModel, 
-  url: '/tags',
+  url: '/api/tags',
   initialize: function(){
     var self = this;
     this.lastOrder = '';
-    this.url = '/tags';
+    this.url = '/api/tags';
   }
 });   
 
