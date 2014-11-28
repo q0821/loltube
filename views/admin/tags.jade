@@ -5,26 +5,20 @@ block append scripts
 
 block content
   .row.clearfix#tagContainer
-    .col-md-1.column
-      span.input-group-btn
-        button.btn.btn-default#copyTag(type='button')
-          em.glyphicon.glyphicon-tags
-          | 　複製
-    .col-md-1.column
-      span.input-group-btn
-        button.btn.btn-default#delTag(type='button')
-          em.glyphicon.glyphicon-trash
-          | 　刪除
-    .col-md-10.column
+    .col-xs-2.col-md-1.column
+      button.btn.btn-default#copyTag(type='button')
+        em.glyphicon.glyphicon-tags &nbsp;複製
+    .col-xs-2.col-md-1.column
+      button.btn.btn-default#delTag(type='button')
+        em.glyphicon.glyphicon-trash &nbsp;刪除
+    .col-xs-8.col-md-10.column
       .input-group
-        input(type='text', class='form-control', id='newTagName', autocomplete='off')
+        input.form-control#newTagName(type='text', autocomplete='off')
         span.input-group-btn
           button.btn.btn-default#newTagBtn(type='button')
-            em.glyphicon.glyphicon-plus
-            | 　新增
-    .col-md-12.column
-      #messageBox
-    .col-md-12.column
+            em.glyphicon.glyphicon-plus &nbsp;新增
+    .col-xs-12.column#messageBox
+    .col-xs-12.column
       table.table.table-hover
         thead
           tr
@@ -48,10 +42,7 @@ block backboneTemplate
       td <%= lastModifier %>
       td <%= lastModified %>
   script#tmplMessage(type='text/template')
-    .alert.alert-dismissible(class!='alert-<%= type %>' role='alert')
-      button.close(type='button', data-dismiss='alert')
-        span(aria-hidden='true') &times;
-        span.sr-only Close
-      strong <%= type.toUpperCase() %>!
-      |&nbsp;&nbsp;<%= content %>
-
+    .panel(class!='panel-<%= type %>')
+      .panel-heading
+        h3.panel-title <%= title %>
+      .panel-body <%= content %>

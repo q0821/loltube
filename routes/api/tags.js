@@ -29,10 +29,7 @@ router.get('/page/:page_index', function(req, res){
         message: "get tag list error"
       });
     } else {
-      res.status(200).json({ 
-        message: "get tag list success", 
-        result: results
-      });
+      res.status(200).json(results);
     }
   });  
 });
@@ -55,29 +52,37 @@ router.get('/:tag_id', function(req, res){
 
 router.post('/', function(req, res){
   var data = req.body;
-  var tag = new Tag();
-  tag.name = data.name;
-  tag.lastModifier = req.user?req.user.username:"system";
-  tag.lastModified = Date.now();
-
-  tag.save(function(err){
+  Tag.find({name: data.name}).limit(1).exec( function(err, result){
     if(err){
-      res.status(400).json({ 
-        message: "insert tag error"
-      });
     } else {
-      Tag.findOne(tag, function(err, result){
-        if(err){          
-          res.status(400).json({
-            message: "some unknown error.."
-          });
-        } else {
-          //res.status(400).end('same tag name');
-          res.status(201).json({
-            _id: result._id
-          });          
-        }
-      });
+      if(result.length > 0){ // Already exist a tag with same name
+        res.status(400).end('Already exist!');
+      } else { // Save the new Tag to database
+        var tag = new Tag();
+        tag.name = data.name;
+        tag.lastModifier = req.user?req.user.username:"system";
+        tag.lastModified = Date.now();
+        tag.save(function(err){
+          if(err){
+            res.status(400).json({ 
+              message: "insert tag error"
+            });
+          } else {
+            Tag.findOne(tag, function(err, result){
+              if(err){          
+                res.status(400).json({
+                  message: "some unknown error.."
+                });
+              } else {
+                //res.status(400).end('same tag name');
+                res.status(201).json({
+                  _id: result._id
+                });          
+              }
+            });
+          }
+        });
+      }
     }
   });
 });

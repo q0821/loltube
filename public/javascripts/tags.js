@@ -12,6 +12,7 @@ app.MessageModel = Backbone.Model.extend({
   defaults:{    
     message: {
       type: 'success',
+      title: 'INITIAL',
       content: 'init success'
     }
   }  
@@ -30,7 +31,11 @@ app.TagModel = Backbone.Model.extend({
   },
   initialize: function(){
     this.bind('invalid', function(model, error){
-      app.tagView.messageModel.set('message', { type: 'danger', content: 'Error: '+error});
+      app.tagView.messageModel.set('message', { 
+        type: 'danger',
+        title: 'ERROR',
+        content: error
+      });
     });
   }
 });
@@ -75,7 +80,11 @@ app.TagView = Backbone.View.extend({
       success: function(model, res){
         self.collection.add(model, {at: 0});
         self.oriCollection.add(model, {at: 0});
-        self.messageModel.set('message', { type: 'success', content: 'Add a new tag to server.'});
+        self.messageModel.set('message', {
+          type: 'success', 
+          title: 'SUCCESS',
+          content: 'Add a new tag <strong>' + model.get('name') + '</strong>'
+        });
         self.$el.find('#newTagName').val('');
         self.filter();
     },
@@ -83,7 +92,11 @@ app.TagView = Backbone.View.extend({
         console.log(model);
         console.log(res);
         console.log(option);
-        self.messageModel.set('message', { type: 'danger', content: 'Error with add a new tag to server.' + res._id});
+        self.messageModel.set('message', { 
+            type: 'danger',
+            title: 'ERROR',
+            content: 'Error with adding new tag.'
+        });
     }    
     });
 
@@ -106,7 +119,11 @@ app.TagView = Backbone.View.extend({
         });
       } else {
         success = false;
-        self.messageModel.set('message', { type:'danger', content:'Error with deleting tags'});
+        self.messageModel.set('message', { 
+          type:'danger', 
+          title: 'ERROR',
+          content:'Error with deleting tags'
+        });
       }
       return success;
     });
@@ -150,6 +167,7 @@ app.TagView = Backbone.View.extend({
     var message = this.messageModel.get('message');
     var data = this.messageTemplate({
       type: message.type,
+      title: message.title,
       content: message.content
     });
     this.$el.find('#messageBox').html(data);
@@ -166,7 +184,11 @@ app.TagView = Backbone.View.extend({
         self.oriCollection = new Backbone.Collection(self.collection.models);
       },
       error: function(){
-        self.messageModel.set('message', { type: 'danger', content: 'some error with getting tag list from server'});
+        self.messageModel.set('message', { 
+          type: 'danger',
+          title: 'ERROR',
+          content: 'some error with getting tag list from server'
+        });
       },
       reset: true
     });
