@@ -78,8 +78,8 @@ app.TagView = Backbone.View.extend({
       lastModifier: 'system'
     },{ 
       success: function(model, res){
-        self.collection.add(model, {at: 0});
-        self.oriCollection.add(model, {at: 0});
+        self.collection.unshift(model);
+        self.oriCollection.unshift(model);
         self.messageModel.set('message', {
           type: 'success', 
           title: 'SUCCESS',
@@ -89,13 +89,10 @@ app.TagView = Backbone.View.extend({
         self.filter();
     },
       error: function(model, res, option){
-        console.log(model);
-        console.log(res);
-        console.log(option);
         self.messageModel.set('message', { 
             type: 'danger',
             title: 'ERROR',
-            content: 'Error with adding new tag.'
+            content: res.responseText
         });
     }    
     });
@@ -108,24 +105,39 @@ app.TagView = Backbone.View.extend({
   delTag: function(){
     var self = this;
     var del = this.$el.find('input[name="index[]"]:checked');
-    var success = true;
+    var isSuccess = true;
     var deletingTag;
     del.each(function(){
       deletingTag = self.collection.get($(this).val());
       if(deletingTag){
         deletingTag.destroy({
-          success: function(){},
-          error: function(){ success = false;}  
+          success: function(model, res){
+            console.log(model);
+            console.log(self.collection);
+            self.messageModel.set('message', { 
+              type:'warning', 
+              title: 'Warning',
+              content: 'Delete the tag: ' + model.get('name')
+            });
+          },
+          error: function(model, res){
+            isSuccess = false;
+            self.messageModel.set('message', { 
+              type:'danger', 
+              title: 'ERROR',
+              content:'Error while deleting tag: ' + model.get('name')
+            });
+          }
         });
       } else {
-        success = false;
+        isSuccess = false;
         self.messageModel.set('message', { 
           type:'danger', 
           title: 'ERROR',
           content:'Error with deleting tags'
         });
       }
-      return success;
+      return isSuccess;
     });
   },
   reorder: function(e){

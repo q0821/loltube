@@ -9,9 +9,7 @@ router.get('/', function(req, res){
   var order = req.query.o ? req.query.o : '-lastModified';
   Tag.find({}).sort(order).exec(function(err, results){
     if(err) {
-      res.status(400).json({ 
-        message: "get tag list error"
-      });
+      res.status(400).end('Get tag list error');
     } else {
       res.status(200).json(results);
     }
@@ -25,9 +23,7 @@ router.get('/page/:page_index', function(req, res){
   var pageIndex = req.params.page_index;
   Tag.find({}).sort(order).skip((pageIndex-1)*perPage).limit(perPage).exec(function(err, results){
     if(err) {
-      res.status(400).json({ 
-        message: "get tag list error"
-      });
+      res.status(400).end('Getting tag list with page+' + pageIndex + ' error');
     } else {
       res.status(200).json(results);
     }
@@ -36,16 +32,11 @@ router.get('/page/:page_index', function(req, res){
 
 router.get('/:tag_id', function(req, res){
   var tag_id = req.params.tag_id;
-  Tag.find({ _id: tag_id}, function(err, results){
+  Tag.findOne({ _id: tag_id}, function(err, result){
     if(err) {
-      res.status(400).json({ 
-        message: "get tag from tag_id error"
-      });
+      res.status(400).end('get tag from tag_id error');
     } else {
-      res.status(200).json({ 
-        message: "get tag from tag_id success",
-        result: results
-      });
+      res.status(200).json(result);
     }
   });
 });
@@ -56,7 +47,7 @@ router.post('/', function(req, res){
     if(err){
     } else {
       if(result.length > 0){ // Already exist a tag with same name
-        res.status(400).end('Already exist!');
+        res.status(400).end('The tag: ' + data.name  + ' is already exist');
       } else { // Save the new Tag to database
         var tag = new Tag();
         tag.name = data.name;
@@ -64,20 +55,13 @@ router.post('/', function(req, res){
         tag.lastModified = Date.now();
         tag.save(function(err){
           if(err){
-            res.status(400).json({ 
-              message: "insert tag error"
-            });
+            res.status(400).end('Insert tag error');
           } else {
             Tag.findOne(tag, function(err, result){
               if(err){          
-                res.status(400).json({
-                  message: "some unknown error.."
-                });
+                res.status(400).end('Some unknown error after saving the tag');
               } else {
-                //res.status(400).end('same tag name');
-                res.status(201).json({
-                  _id: result._id
-                });          
+                res.status(201).json(result);          
               }
             });
           }
@@ -100,16 +84,15 @@ router.put('/:tag_id', function(req, res){
     }},
     function(err, num, raw, results) {
       if(err){
-        res.status(400).json({
-          message: "update tag error"
-        });
+        res.status(400).end('Update tag error');
       } else {
-        Tag.find({ _id: tag_id}, function(err, results){
-          res.status(201).json({ 
-            message: "update db success",
-            result: results
-          });  
-        })
+        Tag.findOne({ _id: tag_id}, function(err, result){
+          if(err){
+            res.status(400).end('Some unknown error after updating the tag');
+          } else {
+            res.status(201).json(result);
+          }
+        });
       }
     }  
   );
@@ -117,16 +100,11 @@ router.put('/:tag_id', function(req, res){
 
 router.delete('/:tag_id', function(req, res){
   var tag_id = req.params.tag_id;
-
   Tag.remove({ _id:tag_id }, function(err){
     if(err){
-      res.status(400).json({ 
-        message: "remove tag error"
-      });
+      res.status(400).end('Removing tag error');
     } else {
-      res.status(201).json({ 
-        message: "remove tag success"
-      });
+      res.status(201).json({ _id:tag_id });
     }
   });  
 });
