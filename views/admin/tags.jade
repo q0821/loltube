@@ -45,4 +45,8 @@ block backboneTemplate
     .panel(class!='panel-<%= type %>')
       .panel-heading
         h3.panel-title <%= title %>
-      .panel-body <%= content %>
+      .panel-body <%= content %>&nbsp;&nbsp;&nbsp;&nbsp;
+        <% console.log(app.tagView.messageModel.get('undoable')); if(app.tagView.messageModel.get('undoable')){ %>
+        a#undo(href='#'): u
+          em.glyphicon.glyphicon-repeat UNDO
+        <% } %>

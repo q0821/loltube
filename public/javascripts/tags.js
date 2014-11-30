@@ -14,7 +14,8 @@ app.MessageModel = Backbone.Model.extend({
       type: 'success',
       title: 'INITIAL',
       content: 'init success'
-    }
+    },
+    undoable: false
   }  
 });
 
@@ -60,8 +61,8 @@ app.TagView = Backbone.View.extend({
     'click .reorder': 'reorder',
     'click .editTag': 'editTag',
     'click #delTag': 'delTag',
-    'keyup #newTagName': 'filter',
-    'change #newTagName': 'filter'
+    'click #undo': 'undo',
+    'input #newTagName': 'filter'
   },
   filter: function(){
     var filter = this.$el.find('#newTagName').val();
@@ -69,40 +70,63 @@ app.TagView = Backbone.View.extend({
       return tag.get('name').indexOf(filter,0)>-1 || tag.get('lastModifier').indexOf(filter,0)>-1;
     }));
   },
+  undo: function(){
+    var self = this;
+    this.undoCollection.models.forEach(function(undoTag){
+      undoTag.save().done(function(){
+        console.log('undoing');
+        self.collection.unshift(undoTag);
+        self.oriCollection.unshift(undoTag);
+      })
+    });
+    this.messageModel.set({
+      message: {
+        type: 'success', 
+        title: 'SUCCESS',
+        content: 'Undo a delete command'
+      },
+      undoable: false
+    });
+  },
   addNewTag: function(){
     var self = this;
-    this.model.clear();
-    this.model.save({
+    var newTag = new app.TagModel();
+    newTag.save({
       name: this.$el.find('#newTagName').val(),
-      lastModified: Date.now(),
-      lastModifier: 'system'
+      lastModified: Date.now()
     },{ 
-      success: function(model, res){
-        self.collection.unshift(model);
-        self.oriCollection.unshift(model);
-        self.messageModel.set('message', {
-          type: 'success', 
-          title: 'SUCCESS',
-          content: 'Add a new tag <strong>' + model.get('name') + '</strong>'
+      success: function(tag, res){
+        self.collection.unshift(tag);
+        self.oriCollection.unshift(tag);
+        self.messageModel.set({
+          message: {
+            type: 'success', 
+            title: 'SUCCESS',
+            content: 'Add a new tag <strong><u>' + tag.get('name') + '</u></strong>'
+          },
+          undoable: false
         });
         self.$el.find('#newTagName').val('');
         self.filter();
-    },
+      }, 
       error: function(model, res, option){
-        self.messageModel.set('message', { 
+        self.messageModel.set({
+          message: { 
             type: 'danger',
             title: 'ERROR',
             content: res.responseText
+          },
+          undoable: false
         });
-    }    
+      }     
     });
-
   },
   editTag: function(e){
     var edittingID = $(e.currentTarget).data('id');
     alert('editting ' + this.collection.get(edittingID).get('name'));
   },
   delTag: function(){
+    this.undoCollection.reset();
     var self = this;
     var del = this.$el.find('input[name="index[]"]:checked');
     var isSuccess = true;
@@ -112,20 +136,26 @@ app.TagView = Backbone.View.extend({
       if(deletingTag){
         deletingTag.destroy({
           success: function(model, res){
-            console.log(model);
-            console.log(self.collection);
-            self.messageModel.set('message', { 
-              type:'warning', 
-              title: 'Warning',
-              content: 'Delete the tag: ' + model.get('name')
+            model.unset('_id');
+            self.undoCollection.add(model);
+            self.messageModel.set({
+              message: { 
+                type:'warning', 
+                title: 'Warning',
+                content: 'Delete the tag: <strong><u>' + model.get('name') + '</strong></u>'
+              },
+              undoable: true
             });
           },
           error: function(model, res){
             isSuccess = false;
-            self.messageModel.set('message', { 
-              type:'danger', 
-              title: 'ERROR',
-              content:'Error while deleting tag: ' + model.get('name')
+            self.messageModel.set({
+              message: { 
+                type:'danger', 
+                title: 'ERROR',
+                content:'Error while deleting tag: ' + model.get('name')
+              },
+              undoable: false
             });
           }
         });
@@ -137,6 +167,7 @@ app.TagView = Backbone.View.extend({
           content:'Error with deleting tags'
         });
       }
+      console.log('set undo to true');
       return isSuccess;
     });
   },
@@ -157,6 +188,7 @@ app.TagView = Backbone.View.extend({
     this.collection.sort();
   },
   render: function(){
+    console.log('rendering');
     var self = this;
     var data = ''; 
     var num = 0;
@@ -188,18 +220,23 @@ app.TagView = Backbone.View.extend({
     var self = this;
     this.model = new app.TagModel();
     this.messageModel = new app.MessageModel();
-    this.oriCollection = new Backbone.Collection();
     this.collection = new app.TagCollection();
+    this.oriCollection = new Backbone.Collection();
+    this.undoCollection = new Backbone.Collection();
+    this.undoable = false;
     this.collection.fetch({
       success: function(collection, res){
         self.render();
         self.oriCollection = new Backbone.Collection(self.collection.models);
       },
       error: function(){
-        self.messageModel.set('message', { 
-          type: 'danger',
-          title: 'ERROR',
-          content: 'some error with getting tag list from server'
+        self.messageModel.set({
+          message: { 
+            type: 'danger',
+            title: 'ERROR',
+            content: 'some error with getting tag list from server'
+          },
+          undoable: false
         });
       },
       reset: true
@@ -217,6 +254,6 @@ app.TagView = Backbone.View.extend({
  * Bootup
  */
 $(document).ready(function(){
-  app.tagView = new app.TagView();    
+  app.tagView = new app.TagView();
 });
 
