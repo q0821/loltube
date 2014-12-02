@@ -49,8 +49,10 @@ app.use(function(req, res, next) {
 // Routing
 var tags = require('./routes/api/tags');
 var tellusadmin = require('./routes/tellusadmin');
+var angularadmin = require('./routes/angularadmin');
 app.use('/api/tags', tags);
 app.use('/tellusadmin', tellusadmin);
+app.use('/angularadmin', angularadmin);
 app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');

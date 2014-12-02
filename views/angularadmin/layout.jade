@@ -1,0 +1,37 @@
+doctype html
+html(lang='zh')
+  head
+    meta(charset='utf-8')
+    title= title
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(name='keywords', contetn= keywords)
+    meta(name='description', content= description)
+    link(rel='stylesheet', href='/bower/bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(type='text/javascript', src='/bower/angular/angular.min.js')
+    script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
+    script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
+    block scripts
+  body
+    .container
+      block menu
+        .row.clearfix
+          .col-md-12.column#mainMenu
+            ul.nav.nav-pills
+              li.disabled
+                a(href='#') Home
+              li.disabled
+                a(href='#') Items
+              li.disabled
+                a(href='#') Menus
+              li
+                a(href='tags') Tags
+              li.navbar-right#accountContainer.disabled
+                a(href='#') Logout
+
+      block title
+        .row.clearfix
+          .col-md-12.column
+            h1= title
+
+      block content

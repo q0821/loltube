@@ -1,0 +1,51 @@
+extends ./layout
+
+block scripts
+  script(type='text/javascript', src='/javascripts/angulartags.js')
+
+block content
+  .row.clearfix#tagContainer(ng-app="tagsAPP")
+    .row.clearfix(ng-controller="tagsListCtrl")
+      .col-md-1.column
+        span.input-group-btn
+          button.btn.btn-default#copyTag(type='button')
+            em.glyphicon.glyphicon-tags
+             　複製
+      .col-md-1.column
+        span.input-group-btn
+          button.btn.btn-default#delTag(type='button',ng-click="delTag()")
+            em.glyphicon.glyphicon-trash
+              刪除
+      .col-md-10.column
+        .input-group
+          input(type='text', class='form-control', id='newTagName', autocomplete='off',ng-model="formData.name")
+          span.input-group-btn
+            button.btn.btn-default#newTagBtn(type='button',ng-click="createTag()")
+              em.glyphicon.glyphicon-plus
+              新增
+      .col-md-12.column
+        #messageBox
+      .col-md-12.column
+        table.table.table-hover
+          thead
+            tr
+              th
+                input(type='checkbox', name='selectAll')          
+              th #
+              th
+                a.reorder(href='#', data-by='name') name
+              th 
+                a.reorder(href='#', data-by='lastModifier') lastModifier
+              th
+                a.reorder(href='#', data-by='lastModified') lastModified
+          tbody#tagList
+            tr(ng-repeat="tag in tags")
+              td
+                input(type="checkbox",checkbox-group,value="{{ tag._id }}")
+              td
+              td
+                {{ tag.name }}
+              td
+                {{ tag.lastModifier }}
+              td
+                {{ tag.lastModified | date:'yyyy/MM/dd HH:mm:ss' }}
