@@ -9,14 +9,16 @@ block content
       button.btn.btn-default#copyTag(type='button')
         em.glyphicon.glyphicon-tags &nbsp;複製
     .col-xs-2.col-md-1.column
-      button.btn.btn-default#delTag(type='button')
+      button.btn.btn-default#unactiveTag(type='button')
         em.glyphicon.glyphicon-trash &nbsp;刪除
-    .col-xs-8.col-md-10.column
+    .col-xs-6.col-md-9.column
       .input-group
         input.form-control#newTagName(type='text', autocomplete='off')
         span.input-group-btn
           button.btn.btn-default#newTagBtn(type='button')
             em.glyphicon.glyphicon-plus &nbsp;新增
+    .col-xs-2.col-md-1.column
+      button.btn.btn-default#recycleMode(type='button') 回收桶
     .col-xs-12.column#messageBox
     .col-xs-12.column
       table.table.table-hover
@@ -46,7 +48,7 @@ block backboneTemplate
       .panel-heading
         h3.panel-title <%= title %>
       .panel-body <%= content %>&nbsp;&nbsp;&nbsp;&nbsp;
-        <% console.log(app.tagView.messageModel.get('undoable')); if(app.tagView.messageModel.get('undoable')){ %>
+        <% if(app.tagView.messageModel.get('undoable')){ %>
         a#undo(href='#'): u
           em.glyphicon.glyphicon-repeat UNDO
         <% } %>

@@ -6,14 +6,9 @@ html(lang='zh')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     meta(name='keywords', contetn= keywords)
     meta(name='description', content= description)
-    block scripts
-      script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
-      script(type='text/javascript', src='/bower/underscore/underscore-min.js')
-      script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
-      script(type='text/javascript', src='/bower/backbone/backbone.js')
-      script(type='text/javascript', src='/javascripts/users.js')
     block stylesheets
       link(rel='stylesheet', href='/bower/bootstrap/dist/css/bootstrap.min.css')
+      link(rel='stylesheet', href='/bower/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css')
       link(rel='stylesheet', href='/stylesheets/style.css')
   body
     .container
@@ -23,13 +18,15 @@ html(lang='zh')
             ul.nav.nav-pills
               li
                 a(href='index') Home
+              li
+                a(href='accounts') Accounts
               li.disabled
                 a(href='#') Items
               li.disabled
                 a(href='#') Menus
               li
                 a(href='tags') Tags
-              li.navbar-right#accountContainer
+              li.navbar-right
                 a(href='/logout') Logout
 
       block title
@@ -40,3 +37,18 @@ html(lang='zh')
       block content
 
     block backboneTemplate
+      script#tmplMessage(type='text/template')
+        .panel(class!='panel-<%= type %>')
+          .panel-heading
+            h3.panel-title <%= title %>
+          .panel-body <%= content %>&nbsp;&nbsp;&nbsp;&nbsp;
+            <% if(app.tagView.messageModel.get('undoable')){ %>
+            a#undo(href='#'): u
+              em.glyphicon.glyphicon-repeat UNDO
+            <% } %>
+    block scripts
+      script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
+      script(type='text/javascript', src='/bower/underscore/underscore-min.js')
+      script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
+      script(type='text/javascript', src='/bower/bootstrap-switch/dist/js/bootstrap-switch.min.js')
+      script(type='text/javascript', src='/bower/backbone/backbone.js')

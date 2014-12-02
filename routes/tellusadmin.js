@@ -17,13 +17,23 @@ router.get('/', function(req, res){
   });
 });
 
-router.post('/', passport.authenticate('local', {
-  successRedirect: '/tellusadmin/index',
-  failureRedirect: '/tellusadmin'  
-}));
+router.post('/', passport.authenticate('local', {failureRedirect: '/tellusadmin'}), function(req, res){
+  Account.update(
+    {username: req.user.username}, 
+    {$set: 
+      {lastLogin: Date.now()}
+    },
+    function(err, num, raw, results){
+      if(err){
+      } else {
+        res.redirect('/tellusadmin/index');
+      } 
+    }
+  );  
+});
 
 router.get('/index', isAuth, function(req, res){
-  console.log('user promission: ' + req.user.promission);
+  //console.log('user promission: ' + req.user.promission);
   res.render('admin/index', {
     title: '管理區 - 首頁',
     username: req.user.username,
@@ -32,10 +42,19 @@ router.get('/index', isAuth, function(req, res){
 })
 
 router.get('/tags', isAuth, function(req, res){
-    res.render('admin/tags', {
-      title: "管理區 - Tags",
-      username: req.user.username
-    });    
+  res.render('admin/tags', {
+    title: "管理區 - Tags",
+    username: req.user.username,
+    promission: req.user.promission
+  });    
+});
+
+router.get('/accounts', isAuth, function(req, res){
+  res.render('admin/accounts', {
+    title: '管理區 - Accounts', 
+    username: req.user.username,
+    promission: req.user.promission
+  });  
 });
 
 router.get('/godmode', isGodmode, function(req, res){

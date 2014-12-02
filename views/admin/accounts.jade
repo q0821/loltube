@@ -1,0 +1,52 @@
+extends ./layout
+
+
+block content
+  .row.clearfix#accountsContainer
+    .col-xa-12.colimn#toolbar
+      .col-xs-2.col-md-1.column
+        button.btn.btn-default#copy(type='button')
+          em.glyphicon.glyphicon-tags &nbsp;複製
+      .col-xs-2.col-md-1.column
+        button.btn.btn-default#unactive(type='button')
+          em.glyphicon.glyphicon-trash &nbsp;刪除
+      .col-xs-6.col-md-8.column
+        .input-group
+          input.form-control#filter(type='text', autocomplete='off')
+          span.input-group-btn
+            button.btn.btn-default#newBtn(type='button')
+              em.glyphicon.glyphicon-plus &nbsp;新增
+      .col-xs-1.col-md-1.column
+        button.btn.btn-default.btn-sm#onlyAdminToggle 管理員
+      .col-xs-1.col-md-1.column
+        button.btn.btn-default.btn-sm#recycleToggle 回收桶
+    .col-xs-12.column#messageBox
+    .col-xs-12.column
+      table.table.table-hover
+        thead
+          tr
+            th.col-xs-1
+              input(type='checkbox', name='selectAll')          
+            th.col-xs-1 #
+            th.col-xs-4
+              a.reorder(href='#', data-by='name') username
+            th.col-xs-2 
+              a.reorder(href='#', data-by='lastLogin') 最後登入時間
+            th.col-xs-2
+              a.reorder(href='#', data-by='lastModified') 最後修改者
+            th.col-xs-2
+              a.reorder(href='#', data-by='lastModified') 最後修改時間
+        tbody#accountList
+
+block append backboneTemplate
+  script#tmplAccount(type='text/template')
+    td: input(type='checkbox', name='index[]', value!='<%= _id %>')
+    td <%= index %>
+    td: a.edit(href='#', data-id!='<%= _id %>') <%= username %>
+    td <%= lastLogin %>
+    td <%= lastModifier %>
+    td <%= lastModified %>
+
+
+block append scripts
+  script(type='text/javascript', src='/javascripts/accounts.js')

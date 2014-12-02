@@ -5,8 +5,8 @@
   "scripts": {
     "postinstall": "bower install",
     "prestart": "npm install",
-    "start": "nodemon ./bin/www -i ./public/",
-    "godmode": "nodemon ./bin/www godmode"
+    "start": "nodemon ./bin/www --ignore bower_components/ --ignore node_modules --ignore public/ --ignore views/ --ignore test/ --ignore logs/",
+    "godmode": "node ./bin/www godmode"
   },
   "dependencies": {
     "body-parser": "~1.8.1",

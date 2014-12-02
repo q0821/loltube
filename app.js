@@ -47,10 +47,17 @@ app.use(function(req, res, next) {
 });
 
 // Routing
-var tags = require('./routes/api/tags');
 var tellusadmin = require('./routes/tellusadmin');
+
+//Routing for APIs
+var tags = require('./routes/api/tags');
+var accounts = require('./routes/api/accounts');
 app.use('/api/tags', tags);
+app.use('/api/accounts', accounts);
+
+//Routting for control panel
 app.use('/tellusadmin', tellusadmin);
+
 app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');

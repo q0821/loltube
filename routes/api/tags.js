@@ -7,7 +7,20 @@ var Tag = require('../../models/tag');
 // Request all tags
 router.get('/', function(req, res){
   var order = req.query.o ? req.query.o : '-lastModified';
-  Tag.find({}).sort(order).exec(function(err, results){
+  Tag.find({active: true}).sort(order).exec(function(err, results){
+    if(err) {
+      res.status(400).end('Get tag list error');
+    } else {
+      res.status(200).json(results);
+    }
+  });  
+});
+
+
+// Request all tags with inactive
+router.get('/recycle', function(req, res){
+  var order = req.query.o ? req.query.o : '-lastModified';
+  Tag.find({active: false}).sort(order).exec(function(err, results){
     if(err) {
       res.status(400).end('Get tag list error');
     } else {
@@ -21,7 +34,7 @@ router.get('/page/:page_index', function(req, res){
   var order = req.query.o ? req.query.o : 'name';
   var perPage = req.query.p ? parseInt(req.query.p) : 50; 
   var pageIndex = req.params.page_index;
-  Tag.find({}).sort(order).skip((pageIndex-1)*perPage).limit(perPage).exec(function(err, results){
+  Tag.find({active: true}).sort(order).skip((pageIndex-1)*perPage).limit(perPage).exec(function(err, results){
     if(err) {
       res.status(400).end('Getting tag list with page+' + pageIndex + ' error');
     } else {
@@ -74,13 +87,14 @@ router.post('/', function(req, res){
 router.put('/:tag_id', function(req, res){
   var data = req.body;
   var tag_id = req.params.tag_id;
-  
+  console.log('change '+tag_id+' to ' + data.active);
   Tag.update(
     {_id: tag_id},
     {$set: { 
       name: data.name,
       lastModifier: req.user?req.user.username : "system",
-      lastModified: Date.now()
+      lastModified: Date.now(),
+      active: data.active
     }},
     function(err, num, raw, results) {
       if(err){
