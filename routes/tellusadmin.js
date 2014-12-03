@@ -33,27 +33,30 @@ router.post('/', passport.authenticate('local', {failureRedirect: '/tellusadmin'
 });
 
 router.get('/index', isAuth, function(req, res){
-  //console.log('user promission: ' + req.user.promission);
+  //console.log('user permission: ' + req.user.permission);
   res.render('admin/index', {
     title: '管理區 - 首頁',
+    active: req.path.slice(1),
     username: req.user.username,
-    promission: req.user.promission
+    permission: req.user.permission
   });
 })
 
 router.get('/tags', isAuth, function(req, res){
   res.render('admin/tags', {
     title: "管理區 - Tags",
+    active: req.path.slice(1),
     username: req.user.username,
-    promission: req.user.promission
+    permission: req.user.permission
   });    
 });
 
 router.get('/accounts', isAuth, function(req, res){
   res.render('admin/accounts', {
     title: '管理區 - Accounts', 
+    active: req.path.slice(1),
     username: req.user.username,
-    promission: req.user.promission
+    permission: req.user.permission
   });  
 });
 
@@ -64,7 +67,7 @@ router.get('/godmode', isGodmode, function(req, res){
 router.post('/godmode', isGodmode, function(req, res){
   Account.register(new Account({ 
     username : req.body.username,
-    promission : 1, 
+    permission : 1, 
     active : true
   }), req.body.password, function(err, account) {
     if (err) {

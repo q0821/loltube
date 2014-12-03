@@ -9,12 +9,14 @@ var app = app || {};
 app.Account = Backbone.Model.extend({
   urlRoot: '/api/accounts',
   defaults: {
-    username: '',
+    realname: '',
+    username: '',     //use for login
+    email: '',
     created: '',
     lastLogin: '',
     lastModifier: '',
     lastModified: '',
-    promission: 0
+    permission: 0
   },
 
   idAttribute: '_id',
@@ -73,8 +75,9 @@ app.AccountView = Backbone.View.extend({
   },
 
   edit: function(){
-    var view = new app.AccountEditView({model: this.model});
+    app.accountEditView.render('編輯帳號', this.model);
   }
+
 });
 
 app.AccountListView = Backbone.View.extend({
@@ -85,7 +88,7 @@ app.AccountListView = Backbone.View.extend({
     this.order = '';
     this.collection = new app.AccountCollection();
     this.renderCollection = new app.AccountCollection();
-    this.listenTo(this.collection, 'add reset', this.render);
+    this.listenTo(this.collection, 'add reset sort', this.render);
     this.collection.fetch({reset: true});
   },
 
@@ -97,13 +100,10 @@ app.AccountListView = Backbone.View.extend({
     var self = this;
     this.$el.empty();
     var renderArray = this.collection.filter(function(account){
-      var check = true;
-      if(self.onlyAdmin)
-        check = account.get('promission') < 0;
-      check = check && account.get('username').indexOf(self.filterText ,0) > -1
-      return check;
+      if(self.onlyAdmin && account.get('permission') < 0)
+        return false;
+      return account.get('username').indexOf(self.filterText ,0) > -1 || account.get('realname').indexOf(self.filterText, 0) > -1;
     });
-    //this.renderCollection.reset(renderArray); 
     renderArray.forEach(function(account, index){
         var view = new app.AccountView({model: account});
         self.$el.append( view.render(index+1).el );
@@ -136,17 +136,36 @@ app.AccountListView = Backbone.View.extend({
 
 app.AccountEditView = Backbone.View.extend({
   initialize: function(){
-    this.render(this);
+    this.template = _.template($('#tmplEditBox').html());
+    this.$editTitle = this.$el.find('#editTitle');
+    this.$editBody = this.$el.find('#editBody');
+    this.$password = this.$el.find('#password');
+    this.$confirm = this.$el.find('#confirm');
   },
-  render: function(){
-    alert(this.model.get('username'));
+  events: {
+    'click #save': 'save'
+  },
+  render: function(title, accountModel){
+    if(this.edittingModel != accountModel){
+      this.edittingModel = accountModel;
+      this.$editTitle.html(title);
+      this.$editBody.html(this.template(accountModel.toJSON()));
+      this.$el.find('#permission').val(this.edittingModel.get('permission'));
+    }
+    this.$password.val('');
+    this.$confirm.val('');
+    
+  },
+  save: function(){
+    alert('save model: ' + this.model.get('username'));
   }
 });
 
-app.ToolbarView = Backbone.View.extend({
+app.AccountToolbarView = Backbone.View.extend({
   events: {
     'click #recycleToggle': 'recycleToggle',
     'click #onlyAdminToggle': 'onlyAdminToggle',
+    'click #newBtn': 'addAccount',
     'input #filter': 'filter'
   },
 
@@ -160,6 +179,11 @@ app.ToolbarView = Backbone.View.extend({
     app.accountListView.onlyAdminToggle();
   },
 
+  addAccount: function(){
+    var newAccount = new app.Account({ username: $('#filter').val() });
+    app.accountEditView.render('新增帳號', newAccount);
+  },
+
   filter: function(){
     app.accountListView.filter($('#filter').val());
   }
@@ -170,5 +194,7 @@ app.ToolbarView = Backbone.View.extend({
  */
 $(document).ready(function(){
   app.accountListView = new app.AccountListView({ el: '#accountList' });
-  app.toolbarView = new app.ToolbarView({el: '#toolbar'});
+  app.accountEditView = new app.AccountEditView({ el: '#editBox'});
+  app.accountToolbarView = new app.AccountToolbarView({el: '#toolbar'});
+  app.messageBoxView = new app.MessageBoxView({ el: '#messageBox'});
 });

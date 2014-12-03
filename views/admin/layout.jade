@@ -11,29 +11,29 @@ html(lang='zh')
       link(rel='stylesheet', href='/bower/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css')
       link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    .container
-      block menu
-        .row.clearfix
-          .col-md-12.column#mainMenu
-            ul.nav.nav-pills
-              li
-                a(href='index') Home
-              li
-                a(href='accounts') Accounts
-              li.disabled
-                a(href='#') Items
-              li.disabled
-                a(href='#') Menus
-              li
-                a(href='tags') Tags
-              li.navbar-right
-                a(href='/logout') Logout
+    block menu
+      nav.navbar.navbar-inverse.navbar-static-top(role='navigation')
+        .container
+          ul.nav.navbar-nav
+            li#index
+              a(href='index') Home
+            li#accounts
+              a(href='accounts') Accounts
+            li#items
+              a(href='#') Items
+            li#menus
+              a(href='#') Menus
+            li#tags
+              a(href='tags') Tags
+          ul.nav.navbar-nav.navbar-right
+            li#logout
+              a(href='/logout') Logout
 
+    .container
       block title
         .row.clearfix
           .col-md-12.column
             h1= title
-
       block content
 
     block backboneTemplate
@@ -52,3 +52,6 @@ html(lang='zh')
       script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
       script(type='text/javascript', src='/bower/bootstrap-switch/dist/js/bootstrap-switch.min.js')
       script(type='text/javascript', src='/bower/backbone/backbone.js')
+      script(type='text/javascript', src='/javascripts/messagebox.js')
+      script(type='text/javascript')
+        |$('##{active}').addClass('active');
