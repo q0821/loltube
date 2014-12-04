@@ -16,7 +16,8 @@ app.Account = Backbone.Model.extend({
     lastLogin: '',
     lastModifier: '',
     lastModified: '',
-    permission: 0
+    permission: 0,
+    password: ''
   },
 
   idAttribute: '_id',
@@ -27,7 +28,7 @@ app.Account = Backbone.Model.extend({
   },
 
   toLocaleTime: function(attr){
-    if(this.get(attr).length > 0){
+    if(this.get(attr) && this.get(attr).length > 0){
       var time = new Date(this.get(attr));
       var hours = time.getHours();
       var minutes = time.getMinutes();
@@ -59,6 +60,8 @@ app.AccountView = Backbone.View.extend({
 
   initialize: function(){
     this.template = _.template($('#tmplAccount').html());
+    this.listenTo(this.model, 'update', this.update);
+    this.listenTo(this.model, 'create', this.create);
   },
 
   events: {
@@ -68,6 +71,7 @@ app.AccountView = Backbone.View.extend({
   render: function(index){
     var content = this.model.toJSON();
     if(index) {
+      this.index = index;
       content.index = index;
     }
     this.$el.html(this.template(content));
@@ -76,6 +80,12 @@ app.AccountView = Backbone.View.extend({
 
   edit: function(){
     app.accountEditView.render('編輯帳號', this.model);
+  },
+
+  update: function(){
+  },
+
+  create: function(){
   }
 
 });
@@ -100,7 +110,7 @@ app.AccountListView = Backbone.View.extend({
     var self = this;
     this.$el.empty();
     var renderArray = this.collection.filter(function(account){
-      if(self.onlyAdmin && account.get('permission') < 0)
+      if(self.onlyAdmin && account.get('permission') < 1)
         return false;
       return account.get('username').indexOf(self.filterText ,0) > -1 || account.get('realname').indexOf(self.filterText, 0) > -1;
     });
@@ -130,6 +140,13 @@ app.AccountListView = Backbone.View.extend({
   filter: function(filterText){
     this.filterText = filterText;
     this.render();
+  },
+
+  // When after a successful edit, call this function to check if this 
+  // edited account a new account or an exist account. If new, add it
+  // into the collection.
+  save: function(account){
+    this.collection.add(account,{at: 0});
   }
 
 });
@@ -157,7 +174,22 @@ app.AccountEditView = Backbone.View.extend({
     
   },
   save: function(){
-    alert('save model: ' + this.model.get('username'));
+    this.edittingModel.set({
+      realname:   this.$editBody.find('#realname').val(),
+      username:   this.$editBody.find('#username').val(),
+      email:      this.$editBody.find('#email').val(),
+      permission: this.$editBody.find('#permission').val(),
+      password:   this.$password.val(),
+      active:     true
+    });
+    this.edittingModel.save({},{
+      success: function(account, res){
+        app.accountListView.save(new app.Account(account.attributes));
+      },
+      error: function(account, res){
+        console.log('an error during saving');
+      } 
+    });
   }
 });
 
@@ -182,6 +214,8 @@ app.AccountToolbarView = Backbone.View.extend({
   addAccount: function(){
     var newAccount = new app.Account({ username: $('#filter').val() });
     app.accountEditView.render('新增帳號', newAccount);
+    $('#filter').val('');
+    this.filter();
   },
 
   filter: function(){

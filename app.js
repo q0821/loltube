@@ -60,7 +60,7 @@ app.use('/tellusadmin', tellusadmin);
 
 app.get('/logout', function(req, res){
   req.logout();
-  res.redirect('/');
+  res.redirect('/tellusadmin');
 });
 
 // catch 404 and forward to error handler

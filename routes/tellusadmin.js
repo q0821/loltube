@@ -83,7 +83,7 @@ router.post('/godmode', isGodmode, function(req, res){
 
 
 function isAuth(req, res, next){
-  if(req.isAuthenticated()) {
+  if(req.isAuthenticated() && req.user.permission > 0) {
     return next();
   }
   res.redirect('/tellusadmin');
