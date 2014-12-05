@@ -8,7 +8,7 @@ var Account = new Schema({
   email: String,
   created: Date,
   lastLogin: Date,         // time for last login
-  lastModifier: String,
+  lastModifier: { type:String, default: ''},
   lastModified: Date,
   permission: Number, // promission level
   active: Boolean

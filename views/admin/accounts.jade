@@ -29,7 +29,7 @@ block content
     .col-xs-12.column#messageBox
     .col-xs-12.column
       .responsive
-        table.table.table-hover
+        table.table.table-hover#accountList
           thead
             tr
               th
@@ -42,10 +42,10 @@ block content
               th
                 a.reorder(href='#', data-by='lastLogin') 最後登入時間
               th
-                a.reorder(href='#', data-by='lastModified') 最後修改者
+                a.reorder(href='#', data-by='lastModifier') 最後修改者
               th
                 a.reorder(href='#', data-by='lastModified') 最後修改時間
-          tbody#accountList
+          tbody
 
   .modal.fade#editBox
     .modal-dialog.modal-lg
@@ -108,3 +108,5 @@ block append backboneTemplate
 
 block append scripts
   script(type='text/javascript', src='/javascripts/accounts.js')
+  script(type='text/javascript', src='/javascripts/models/accounts.js')
+  script(type='text/javascript', src='/javascripts/views/accounts.js')

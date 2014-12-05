@@ -23,6 +23,7 @@ app.MessageBoxView = Backbone.View.extend({
   initialize: function(){
     this.model = new app.MessageBoxModel();
     this.template = _.template($('#tmplMessageBox').html());
+    this.listenTo(this.model, 'change', this.render);
   },
 
   events: {
@@ -34,6 +35,5 @@ app.MessageBoxView = Backbone.View.extend({
   },
 
   undo: function(){
-    console.log('undoing');
   }
 });
