@@ -9,7 +9,7 @@ app.AccountView = Backbone.View.extend({
 
   initialize: function(){
     this.template = _.template($('#tmplAccount').html());
-    this.listenTo(this.model, 'update', this.render);
+    this.listenTo(this.model, 'change', this.update);
   },
 
   events: {
@@ -28,12 +28,14 @@ app.AccountView = Backbone.View.extend({
 
   edit: function(){
     app.accountEditView.render('編輯帳號', this.model);
-  }
-/*
+  },
+
   update: function(){
-    this.$el.html(this.template(this.model.toJSON));
+    var content = this.model.toJSON();
+    content.index = this.index;
+    this.$el.html(this.template(content));
   }
-*/
+
 });
 
 app.AccountListView = Backbone.View.extend({
@@ -50,7 +52,8 @@ app.AccountListView = Backbone.View.extend({
   },
 
   events: {
-    'click .reorder': 'reorder'
+    'click .reorder': 'reorder',
+    'click #selectAll': 'selectAll'
   },
 
   // render all items in the collection
@@ -111,10 +114,13 @@ app.AccountListView = Backbone.View.extend({
   // When after a successful edit, call this function to check if this 
   // edited account a new account or an exist account. If new, add it
   // into the collection.
-  save: function(account){
+  addOne: function(account){
     this.collection.add(account,{at: 0});
-  }
+  },
 
+  selectAll: function(){
+
+  }
 });
 
 app.AccountEditView = Backbone.View.extend({
@@ -125,9 +131,11 @@ app.AccountEditView = Backbone.View.extend({
     this.$password = this.$el.find('#password');
     this.$confirm = this.$el.find('#confirm');
   },
+
   events: {
     'click #save': 'save'
   },
+
   render: function(title, accountModel){
     if(this.edittingModel != accountModel){
       this.edittingModel = accountModel;
@@ -136,25 +144,24 @@ app.AccountEditView = Backbone.View.extend({
       this.$el.find('#permission').val(this.edittingModel.get('permission'));
     }
     this.$password.val('');
-    this.$confirm.val('');
-    
+    this.$confirm.val('');  
   },
+
   save: function(){
     this.edittingModel.set({
       realname:   this.$editBody.find('#realname').val(),
       username:   this.$editBody.find('#username').val(),
       email:      this.$editBody.find('#email').val(),
       permission: this.$editBody.find('#permission').val(),
-      password:   this.$password.val(),
-      active:     true
+      password:   this.$password.val()
     });
     this.edittingModel.save({},{
       success: function(account, res){
-        app.accountListView.save(new app.Account(account.attributes));
+        app.accountListView.addOne(new app.Account(account.attributes));
         app.messageBoxView.model.set({
           type: 'success',
           title: 'SUCCESS',
-          content: 'Add a new account: ' + account.get('username') + ' success',
+          content: 'Edit account: <strong><u>' + account.get('username') + '</u></strong> success',
           undoable: false
         })
       },
@@ -171,10 +178,15 @@ app.AccountEditView = Backbone.View.extend({
 });
 
 app.AccountToolbarView = Backbone.View.extend({
+  initialize: function(){
+    this.recycleMode = false;
+  },
+
   events: {
     'click #recycleToggle': 'recycleToggle',
     'click #onlyAdminToggle': 'onlyAdminToggle',
     'click #newBtn': 'addAccount',
+    'click #remove': 'remove',
     'input #filter': 'filter'
   },
 
@@ -197,5 +209,14 @@ app.AccountToolbarView = Backbone.View.extend({
 
   filter: function(){
     app.accountListView.filter($('#filter').val());
+  },
+
+  remove: function(){
+    if(this.recycle){
+      // 刪除
+    } else {
+      // active = false
+    }
   }
-})
+
+});

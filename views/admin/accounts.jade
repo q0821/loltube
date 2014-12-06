@@ -15,7 +15,7 @@ block content
           .navbar-collapse.collapse#toolbar(aria-expanded='false')
             button.btn.btn-default.navbar-btn.navbar-left#copy(type='button')
               em.glyphicon.glyphicon-tags &nbsp;複製
-            button.btn.btn-default.navbar-btn.navbar-left#unactive(type='button')
+            button.btn.btn-default.navbar-btn.navbar-left#remove(type='button')
               em.glyphicon.glyphicon-trash &nbsp;刪除
             form.navbar-form.navbar-left
               .input-group
@@ -33,7 +33,7 @@ block content
           thead
             tr
               th
-                input(type='checkbox', name='selectAll')          
+                input#selectAll(type='checkbox', name='selectAll')
               th #
               th
                 a.reorder(href='#', data-by='realname') realname
@@ -72,11 +72,11 @@ block append backboneTemplate
   script#tmplAccount(type='text/template')
     td: input(type='checkbox', name='index[]', value!='<%= _id %>')
     td <%= index %>
-    td: a.edit(href='#', data-toggle='modal', data-target='#editBox' data-id!='<%= _id %>') <%= realname %>
-    td: a.edit(href='#', data-toggle='modal', data-target='#editBox' data-id!='<%= _id %>') <%= username %>
-    td <%= lastLogin %>
+    td: a.edit(href='#', data-toggle='modal', data-target='#editBox') <%= realname %>
+    td: a.edit(href='#', data-toggle='modal', data-target='#editBox') <%= username %>
+    td <%= lastLoginLocale %>
     td <%= lastModifier %>
-    td <%= lastModified %>
+    td <%= lastModifiedLocale %>
 
   script#tmplMessageBox(type='text/template')
     .panel(class!='panel-<%= type %>')

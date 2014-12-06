@@ -9,6 +9,7 @@ var app = app || {};
 app.Account = Backbone.Model.extend({
   urlRoot: '/api/accounts',
   defaults: {
+    // data from server
     realname: '',
     username: '',     //use for login
     email: '',
@@ -17,7 +18,11 @@ app.Account = Backbone.Model.extend({
     lastModifier: '',
     lastModified: '',
     permission: 0,
-    password: ''
+    password: '',
+
+    // only within client
+    lastLoginLocale: '',
+    lastModifiedLocale: ''
   },
 
   idAttribute: '_id',
@@ -37,7 +42,7 @@ app.Account = Backbone.Model.extend({
       if(minutes < 10) 
         minutes = '0' + minutes;
       var dateString = time.toLocaleDateString() + ' ' + hours + ':' + minutes;
-      this.set(attr, dateString);
+      this.set(attr+'Locale', dateString);
     } else {
       this.set(attr, '');
     }
