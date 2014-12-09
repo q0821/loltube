@@ -154,62 +154,94 @@ app.AccountListView = Backbone.View.extend({
   },
 */
 
+  recover: function(){
+    var self = this;
+    var selected = this.$el.find('input[name="index[]"]:checked');
+    var isSuccess = true;
+    selected.each(function(index){
+      var id = $(this).val();
+      var account = self.collection.get(id);
+      account.save({active: true}, {
+        success: function(model, res){
+          self.collection.remove(model);
+          app.messageBoxView.model.set({
+            type: 'success',
+            title: 'SUCCESS',
+            content: 'Recover accounts: <strong><u>' + model.get('username') + '</u></strong> success'
+          })
+        },
+        error: function(model, res){
+          isSuccess = false
+          app.messageBoxView.model.set({
+            type: 'danger',
+            title: 'ERROR',
+            content: res.responseText
+          })
+        }  
+      });
+      return isSuccess;
+    });
+
+  },
+
+  unactive: function(){
+    var self = this;
+    var selected = this.$el.find('input[name="index[]"]:checked');
+    var isSuccess = true;
+    selected.each(function(index){
+      var id = $(this).val();
+      var account = self.collection.get(id);
+      account.save({active: false}, {
+        success: function(model, res){
+          self.collection.remove(model);
+          app.messageBoxView.model.set({
+            type: 'success',
+            title: 'SUCCESS',
+            content: 'Unactive accounts: <strong><u>' + model.get('username') + '</u></strong> success'
+          })
+        },
+        error: function(model, res){
+          isSuccess = false
+          app.messageBoxView.model.set({
+            type: 'danger',
+            title: 'ERROR',
+            content: res.responseText
+          })
+        }  
+      });
+      return isSuccess;
+    });
+  },
+
   remove: function(){
     var self = this;
     var selected = this.$el.find('input[name="index[]"]:checked');
     var isSuccess = true;
-    if(this.recycleMode){
-      // in the recycleMode, account would be deleted
-      selected.each(function(index){
-        var id = $(this).val();
-        var account = self.collection.get(id);
-        account.destroy({
-          success: function(model, res){
-            self.collection.remove(model);
-            app.messageBoxView.model.set({
-              type: 'success',
-              title: 'SUCCESS',
-              content: 'Remove account: <strong><u>' + model.get('username') + '</u></strong> success'
-            })
-          },
-          error: function(model, res){
-            isSuccess = false;
-            app.messageBoxView.model.set({
-              type: 'danger',
-              title: 'ERROR',
-              content: res.responseText
-            })
-          }  
-        });
-        return isSuccess;
+    selected.each(function(index){
+      var id = $(this).val();
+      var account = self.collection.get(id);
+      account.destroy({
+        success: function(model, res){
+          self.collection.remove(model);
+          app.messageBoxView.model.set({
+            type: 'success',
+            title: 'SUCCESS',
+            content: 'Remove account: <strong><u>' + model.get('username') + '</u></strong> success'
+          })
+        },
+        error: function(model, res){
+          isSuccess = false;
+          app.messageBoxView.model.set({
+            type: 'danger',
+            title: 'ERROR',
+            content: res.responseText
+          })
+        }  
       });
-    } else {
-      // without the recycleMode, account would be unactive
-      selected.each(function(index){
-        var id = $(this).val();
-        var account = self.collection.get(id);
-        account.save({active: false}, {
-          success: function(model, res){
-            self.collection.remove(model);
-            app.messageBoxView.model.set({
-              type: 'success',
-              title: 'SUCCESS',
-              content: 'Unactive accounts: <strong><u>' + model.get('username') + '</u></strong> success'
-            })
-          },
-          error: function(model, res){
-            isSuccess = false
-            app.messageBoxView.model.set({
-              type: 'danger',
-              title: 'ERROR',
-              content: res.responseText
-            })
-          }  
-        });
-        return isSuccess;
-      });
-    }
+      return isSuccess;
+    });
   }
+
 });
 
 
@@ -223,16 +255,19 @@ app.AccountToolbarView = Backbone.View.extend({
     'click #onlyAdminToggle': 'onlyAdminToggle',
     'click #newBtn': 'add',
     'click #removeBtn': 'remove',
+    'click #recoverBtn': 'recover',
     'input #filter': 'filter'
   },
 
   recycleToggle: function(){
-    $('#recycleToggle').toggleClass('active');
+    this.$el.find('#recycleToggle').toggleClass('active');
+    this.$el.find('#recoverBtn').toggleClass('hide');
+    this.recycleMode = !this.recycleMode;
     app.accountListView.recycleToggle(); 
   },
 
   onlyAdminToggle: function(){
-    $('#onlyAdminToggle').toggleClass('active');
+    this.$el.find('#onlyAdminToggle').toggleClass('active');
     app.accountListView.onlyAdminToggle();
   },
 
@@ -249,7 +284,14 @@ app.AccountToolbarView = Backbone.View.extend({
   },
 
   remove: function(){
-    app.accountListView.remove();
+    if(this.recycleMode)
+      app.accountListView.remove();
+    else
+      app.accountListView.unactive();
+  },
+
+  recover: function(){
+    app.accountListView.recover();
   }
 
 });
