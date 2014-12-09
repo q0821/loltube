@@ -19,6 +19,7 @@ app.Account = Backbone.Model.extend({
     lastModified: '',
     permission: 0,
     password: '',
+    active: true,
 
     // only within client
     lastLoginLocale: '',
