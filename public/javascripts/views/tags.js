@@ -8,11 +8,11 @@ var app = app || {};
 /*
  * Views
  */
-app.AccountView = Backbone.View.extend({
+app.TagView = Backbone.View.extend({
   tagName: 'tr',
 
   initialize: function(){
-    this.template = _.template($('#tmplAccount').html());
+    this.template = _.template($('#tmplTag').html());
     this.listenTo(this.model, 'change', this.update);
   },
 
@@ -31,7 +31,7 @@ app.AccountView = Backbone.View.extend({
   },
 
   edit: function(){
-    app.accountEditView.render('編輯帳號', this.model);
+    app.tagEditView.render('編輯帳號', this.model);
   },
 
   update: function(){
@@ -42,16 +42,15 @@ app.AccountView = Backbone.View.extend({
 
 });
 
-app.AccountListView = Backbone.View.extend({
+app.TagListView = Backbone.View.extend({
   initialize: function(){
     this.$body = this.$el.find('tbody');
     this.$selectAll = this.$el.find('#selectAll');
     this.recycleMode = false;
-    this.onlyAdmin = false;
     this.filterText = '';
-    this.order = 'created';
-    this.collection = new app.AccountCollection();
-    this.renderCollection = new app.AccountCollection();
+    this.order = '_id';
+    this.collection = new app.TagCollection();
+    this.renderCollection = new app.TagCollection();
     this.listenTo(this.collection, 'add reset sort remove', this.render);
     this.collection.fetch({reset: true});
   },
@@ -65,34 +64,25 @@ app.AccountListView = Backbone.View.extend({
   render: function(){
     var self = this;
     this.$body.empty();
-    var renderArray = this.collection.filter(function(account){
-      if(self.onlyAdmin && account.get('permission') < 1)
-        return false;
-      return account.get('username').indexOf(self.filterText ,0) > -1 || account.get('realname').indexOf(self.filterText, 0) > -1;
+    var renderArray = this.collection.filter(function(model){
+      return model.get('name').indexOf(self.filterText ,0) > -1 ;
     });
-    renderArray.forEach(function(account, index){
-        var view = new app.AccountView({model: account});
+    renderArray.forEach(function(model, index){
+        var view = new app.TagView({model: model});
         self.$body.append( view.render(index+1).el );
     });
   },
 
-  // toggle the active/inactive accounts
+  // toggle the active/inactive tags
   recycleToggle: function() {
     this.$selectAll.prop('checked', false);
     this.recycleMode = !this.recycleMode;
     $('#newBtn').prop('disabled', this.recycleMode);
     if(this.recycleMode)
-      this.collection.url = '/api/accounts/recycle';
+      this.collection.url = '/api/tags/recycle';
     else
-      this.collection.url = '/api/accounts';
+      this.collection.url = '/api/tags';
     this.collection.fetch({reset:true});
-  },
-
-  // toggle the admin/all accounts
-  onlyAdminToggle: function() {
-    this.$selectAll.prop('checked', false);
-    this.onlyAdmin = !this.onlyAdmin;
-    this.render();
   },
 
   filter: function(filterText){
@@ -102,7 +92,6 @@ app.AccountListView = Backbone.View.extend({
   },
 
   reorder: function(e){
-    console.log('reorder');
     var newOrder = $(e.currentTarget).data('by');
     var reverser;
     if(this.order === newOrder){
@@ -123,8 +112,8 @@ app.AccountListView = Backbone.View.extend({
   // When after a successful edit, call this function to check if this 
   // edited account a new account or an exist account. If new, add it
   // into the collection.
-  addOne: function(account){
-    this.collection.add(account,{at: 0});
+  addOne: function(model){
+    this.collection.add(model,{at: 0});
   },
 
   selectAll: function(e){
@@ -164,14 +153,14 @@ app.AccountListView = Backbone.View.extend({
     var isSuccess = true;
     selected.each(function(index){
       var id = $(this).val();
-      var account = self.collection.get(id);
-      account.save({active: true}, {
+      var tag = self.collection.get(id);
+      tag.save({active: true}, {
         success: function(model, res){
           self.collection.remove(model);
           app.messageBoxView.model.set({
             type: 'success',
             title: 'SUCCESS',
-            content: 'Recover accounts: <strong><u>' + model.get('username') + '</u></strong> success'
+            content: 'Recover tags: <strong><u>' + model.get('username') + '</u></strong> success'
           })
         },
         error: function(model, res){
@@ -194,14 +183,14 @@ app.AccountListView = Backbone.View.extend({
     var isSuccess = true;
     selected.each(function(index){
       var id = $(this).val();
-      var account = self.collection.get(id);
-      account.save({active: false}, {
+      var tag = self.collection.get(id);
+      tag.save({active: false}, {
         success: function(model, res){
           self.collection.remove(model);
           app.messageBoxView.model.set({
             type: 'success',
             title: 'SUCCESS',
-            content: 'Unactive accounts: <strong><u>' + model.get('username') + '</u></strong> success'
+            content: 'Unactive tags: <strong><u>' + model.get('username') + '</u></strong> success'
           })
         },
         error: function(model, res){
@@ -223,14 +212,14 @@ app.AccountListView = Backbone.View.extend({
     var isSuccess = true;
     selected.each(function(index){
       var id = $(this).val();
-      var account = self.collection.get(id);
-      account.destroy({
+      var tag = self.collection.get(id);
+      tag.destroy({
         success: function(model, res){
           self.collection.remove(model);
           app.messageBoxView.model.set({
             type: 'success',
             title: 'SUCCESS',
-            content: 'Remove account: <strong><u>' + model.get('username') + '</u></strong> success'
+            content: 'Remove tags: <strong><u>' + model.get('username') + '</u></strong> success'
           })
         },
         error: function(model, res){
@@ -249,14 +238,13 @@ app.AccountListView = Backbone.View.extend({
 });
 
 
-app.AccountToolbarView = Backbone.View.extend({
+app.TagToolbarView = Backbone.View.extend({
   initialize: function(){
     this.recycleMode = false;
   },
 
   events: {
     'click #recycleToggle': 'recycleToggle',
-    'click #onlyAdminToggle': 'onlyAdminToggle',
     'click #newBtn': 'add',
     'click #removeBtn': 'remove',
     'click #recoverBtn': 'recover',
@@ -268,46 +256,39 @@ app.AccountToolbarView = Backbone.View.extend({
     this.$el.find('#recoverBtn').toggleClass('hide');
     this.$el.find('#recycleLabel').toggleClass('hide');
     this.recycleMode = !this.recycleMode;
-    app.accountListView.recycleToggle(); 
-  },
-
-  onlyAdminToggle: function(){
-    this.$el.find('#onlyAdminToggle').toggleClass('active');
-    this.$el.find('#adminLabel').toggleClass('hide');
-    app.accountListView.onlyAdminToggle();
+    app.tagListView.recycleToggle(); 
   },
 
   filter: function(){
-    app.accountListView.filter($('#filter').val());
+    app.tagListView.filter($('#filter').val());
   },
 
   add: function(){
-    var newUserName = this.$el.find('#filter').val()
-    var newAccount = new app.Account({ username: newUserName });
-    app.accountEditView.render('新增帳號', newAccount);
+    var newTagName = this.$el.find('#filter').val()
+    var newTag = new app.Tag({ name: newTagName });
+    app.tagEditView.render('新增Tag', newTag);
     $('#filter').val('');
     this.filter();
   },
 
   remove: function(){
     if(this.recycleMode)
-      app.accountListView.remove();
+      app.tagListView.remove();
     else
-      app.accountListView.unactive();
+      app.tagListView.unactive();
   },
 
   recover: function(){
-    app.accountListView.recover();
+    app.tagListView.recover();
   }
 
 });
 
-app.AccountEditView = Backbone.View.extend({
+app.TagEditView = Backbone.View.extend({
   initialize: function(){
     this.template = _.template($('#tmplEditBox').html())
     this.$editTitle = this.$el.find('#editTitle');
     this.$editBody = this.$el.find('#editBody');
-    this.$password = this.$el.find('#password');
     this.$confirm = this.$el.find('#confirm');
   },
 
@@ -315,36 +296,29 @@ app.AccountEditView = Backbone.View.extend({
     'click #save': 'save'
   },
 
-  render: function(title, accountModel){
-    if(this.edittingModel != accountModel){
-      this.edittingModel = accountModel;
+  render: function(title, tagModel){
+    if(this.edittingModel != tagModel){
+      this.edittingModel = tagModel;
       this.$editTitle.html(title);
-      this.$editBody.html(this.template(accountModel.toJSON()));
-      this.$el.find('#permission').val(this.edittingModel.get('permission'));
+      this.$editBody.html(this.template(tagModel.toJSON()));
     }
-    this.$password.val('');
-    this.$confirm.val('');  
   },
 
   save: function(){
     this.edittingModel.set({
-      realname:   this.$editBody.find('#realname').val(),
-      username:   this.$editBody.find('#username').val(),
-      email:      this.$editBody.find('#email').val(),
-      permission: this.$editBody.find('#permission').val(),
-      password:   this.$password.val()
+      name:   this.$editBody.find('#tagName').val(),
     });
     this.edittingModel.save({},{
-      success: function(account, res){
-        app.accountListView.addOne(new app.Account(account.attributes));
+      success: function(tag, res){
+        app.tagListView.addOne(new app.Tag(tag.attributes));
         app.messageBoxView.model.set({
           type: 'success',
           title: 'SUCCESS',
-          content: 'Edit account: <strong><u>' + account.get('username') + '</u></strong> success',
+          content: 'Edit tag: <strong><u>' + tag.get('name') + '</u></strong> success',
           undoable: false
         })
       },
-      error: function(account, res){
+      error: function(tag, res){
         app.messageBoxView.model.set({
           type: 'danger',
           title: 'Error',

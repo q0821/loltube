@@ -1,54 +1,88 @@
 extends ./layout
 
-block append scripts
-  script(type='text/javascript', src='/javascripts/tags.js')
 
 block content
-  .row.clearfix#tagContainer
-    .col-xs-2.col-md-1.column
-      button.btn.btn-default#copyTag(type='button')
-        em.glyphicon.glyphicon-tags &nbsp;複製
-    .col-xs-2.col-md-1.column
-      button.btn.btn-default#unactiveTag(type='button')
-        em.glyphicon.glyphicon-trash &nbsp;刪除
-    .col-xs-6.col-md-9.column
-      .input-group
-        input.form-control#newTagName(type='text', autocomplete='off')
-        span.input-group-btn
-          button.btn.btn-default#newTagBtn(type='button')
-            em.glyphicon.glyphicon-plus &nbsp;新增
-    .col-xs-2.col-md-1.column
-      button.btn.btn-default#recycleMode(type='button') 回收桶
-    .col-xs-12.column#messageBox
-    .col-xs-12.column
-      table.table.table-hover
-        thead
-          tr
-            th
-              input(type='checkbox', name='selectAll')          
-            th #
-            th
-              a.reorder(href='#', data-by='name') name
-            th 
-              a.reorder(href='#', data-by='lastModifier') lastModifier
-            th
-              a.reorder(href='#', data-by='lastModified') lastModified
-        tbody#tagList
+  .container
+    .row.clearfix#tagsContainer
+      .col-md-12.column
+        h1 管理區 - Tags 
+      .col-xs-12.column
+        nav.navbar.navbar-default(role='navigation')
+          .container-fluid
+            .navbar-header
+              button.navbar-toggle.collapsed(data-toggle='collapse', data-target='#toolbar', aria-expanded='false')
+                span.sr-only Toggle
+                span.icon-bar 
+                span.icon-bar 
+                span.icon-bar 
+            .navbar-collapse.collapse#toolbar(aria-expanded='false')
+              button.btn.btn-default.navbar-btn.navbar-left.hide#recoverBtn(type='button')
+                em.glyphicon.glyphicon-repeat &nbsp;回復
+              button.btn.btn-default.navbar-btn.navbar-left#copyBtn(type='button')
+                em.glyphicon.glyphicon-tags &nbsp;複製
+              button.btn.btn-default.navbar-btn.navbar-left#removeBtn(type='button')
+                em.glyphicon.glyphicon-trash &nbsp;刪除
+              form.navbar-form.navbar-left
+                .input-group
+                  input.form-control#filter(type='text', autofocus='autofocus', autocomplete='off', placeholder='Tag名稱') 
+                  span.input-group-btn
+                    button.btn.btn-default#newBtn(type='button', data-toggle='modal', data-target='#editBox')
+                      em.glyphicon.glyphicon-plus &nbsp;新增
+              button.btn.btn-default.navbar-btn.navbar-right#recycleToggle 回收桶
 
-block backboneTemplate
-  script#tmplTagList(type='text/template')
-    tr
-      td: input(type='checkbox', name='index[]', value!='<%= id %>')
-      td <%= num %>
-      td: a.editTag(href='#', data-id!='<%= id %>') <%= name %>
-      td <%= lastModifier %>
-      td <%= lastModified %>
-  script#tmplMessage(type='text/template')
+      .col-xs-12.column#messageBox
+      .col-xs-12.column
+        .responsive
+          table.table.table-hover#contentTable
+            thead
+              tr
+                th
+                  input#selectAll(type='checkbox', name='selectAll')
+                th #
+                th
+                  a.reorder(href='#', data-by='name') Tag Name
+                th
+                  a.reorder(href='#', data-by='lastModifier') 最後修改者
+                th
+                  a.reorder(href='#', data-by='lastModified') 最後修改時間
+            tbody
+
+    .modal.fade#editBox
+      .modal-dialog.modal-lg
+        .modal-content
+          .modal-header
+            h4.modal-title#editTitle Modal title
+          .modal-body
+            .row#editBody
+          .modal-footer
+            button.btn.btn-default(data-dismiss='modal') Close
+            button.btn.btn-primary(data-dismiss='modal')#save Save
+
+block append backboneTemplate
+  script#tmplTag(type='text/template')
+    td: input(type='checkbox', name='index[]', value!='<%= _id %>')
+    td <%= index %>
+    td: a.edit(href='#', data-toggle='modal', data-target='#editBox') <%= name %>
+    td <%= lastModifier %>
+    td <%= lastModifiedLocale %>
+
+  script#tmplMessageBox(type='text/template')
     .panel(class!='panel-<%= type %>')
       .panel-heading
         h3.panel-title <%= title %>
       .panel-body <%= content %>&nbsp;&nbsp;&nbsp;&nbsp;
-        <% if(app.tagView.messageModel.get('undoable')){ %>
+        <% if(undoable){ %>
         a#undo(href='#'): u
           em.glyphicon.glyphicon-repeat UNDO
         <% } %>
+
+  script#tmplEditBox(type='text/template')
+    .col-xs-12
+      .input-group.form-group
+        span.input-group-addon Tag名稱
+        input.form-control#tagName(type='text', placeholder='Tag Name', value!='<%= name %>')
+
+block append scripts
+  script(type='text/javascript', src='/javascripts/tags.js')
+  script(type='text/javascript', src='/javascripts/models/tags.js')
+  script(type='text/javascript', src='/javascripts/views/tags.js')

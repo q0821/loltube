@@ -2,71 +2,81 @@ extends ./layout
 
 
 block content
-  .row.clearfix#accountsContainer
-    .col-xs-12.column
-      nav.navbar.navbar-default(role='navigation')
-        .container-fluid
-          .navbar-header
-            button.navbar-toggle.collapsed(data-toggle='collapse', data-target='#toolbar', aria-expanded='false')
-              span.sr-only Toggle
-              span.icon-bar 
-              span.icon-bar 
-              span.icon-bar 
-          .navbar-collapse.collapse#toolbar(aria-expanded='false')
-            button.btn.btn-default.navbar-btn.navbar-left.hide#recoverBtn(type='button')
-              em.glyphicon.glyphicon-repeat &nbsp;回復
-            button.btn.btn-default.navbar-btn.navbar-left#removeBtn(type='button')
-              em.glyphicon.glyphicon-trash &nbsp;刪除
-            form.navbar-form.navbar-left
-              .input-group
-                input.form-control#filter(type='text', autofocus='autofocus', autocomplete='off', placeholder='使用者名稱') 
-                span.input-group-btn
-                  button.btn.btn-default#newBtn(type='button', data-toggle='modal', data-target='#editBox')
-                    em.glyphicon.glyphicon-plus &nbsp;新增
-            button.btn.btn-default.navbar-btn.navbar-right#onlyAdminToggle 管理員
-            button.btn.btn-default.navbar-btn.navbar-right#recycleToggle 回收桶
+  .container#toolbar
+    .row.clearfix
+      .col-md-6.column
+        h1 管理區 - Accounts
+      .col-md-6.column
+        span.label.label-info.pull-right.hide#adminLabel 管理員
+        span.label.label-danger.pull-right.hide#recycleLabel 回收桶
+    .row.clearfix
+      .col-xs-12.column
+        nav.navbar.navbar-default(role='navigation')
+          .container-fluid
+            .navbar-header
+              button.navbar-toggle.collapsed(data-toggle='collapse', data-target='#toolbar', aria-expanded='false')
+                span.sr-only Toggle
+                span.icon-bar 
+                span.icon-bar 
+                span.icon-bar 
+            .navbar-collapse.collapse(aria-expanded='false')
+              button.btn.btn-default.navbar-btn.navbar-left.hide#recoverBtn(type='button')
+                em.glyphicon.glyphicon-repeat &nbsp;回復
+              button.btn.btn-default.navbar-btn.navbar-left#removeBtn(type='button')
+                em.glyphicon.glyphicon-trash &nbsp;刪除
+              form.navbar-form.navbar-left
+                .input-group
+                  input.form-control#filter(type='text', autofocus='autofocus', autocomplete='off', placeholder='使用者名稱') 
+                  span.input-group-btn
+                    button.btn.btn-default#newBtn(type='button', data-toggle='modal', data-target='#editBox')
+                      em.glyphicon.glyphicon-plus &nbsp;新增
+              button.btn.btn-default.navbar-btn.navbar-right#onlyAdminToggle 管理員
+              button.btn.btn-default.navbar-btn.navbar-right#recycleToggle 回收桶
 
-    .col-xs-12.column#messageBox
-    .col-xs-12.column
-      .responsive
-        table.table.table-hover#accountList
-          thead
-            tr
-              th
-                input#selectAll(type='checkbox', name='selectAll')
-              th #
-              th
-                a.reorder(href='#', data-by='realname') realname
-              th
-                a.reorder(href='#', data-by='username') username
-              th
-                a.reorder(href='#', data-by='lastLogin') 最後登入時間
-              th
-                a.reorder(href='#', data-by='lastModifier') 最後修改者
-              th
-                a.reorder(href='#', data-by='lastModified') 最後修改時間
-          tbody
+  .container
+    .row.clearfix
+      .col-xs-12.column#messageBox
+    .row.clearfix
+      .col-xs-12.column
+        .responsive
+          table.table.table-hover#contentTable
+            thead
+              tr
+                th
+                  input#selectAll(type='checkbox', name='selectAll')
+                th #
+                th
+                  a.reorder(href='#', data-by='realname') realname
+                th
+                  a.reorder(href='#', data-by='username') username
+                th
+                  a.reorder(href='#', data-by='lastLogin') 最後登入時間
+                th
+                  a.reorder(href='#', data-by='lastModifier') 最後修改者
+                th
+                  a.reorder(href='#', data-by='lastModified') 最後修改時間
+            tbody
 
-  .modal.fade#editBox
-    .modal-dialog.modal-lg
-      .modal-content
-        .modal-header
-          h4.modal-title#editTitle Modal title
-        .modal-body
-          .row#editBody
-        .modal-footer
-          .row
-            .col-xs-12.col-md-6
-              .input-group.form-group
-                span.input-group-addon 修改密碼
-                input.form-control#password(type='password', placeholder='password', value='')
-            .col-xs-12.col-md-6.form-group
-              .input-group
-                span.input-group-addon 確認密碼
-                input.form-control#confirm(type='password', placeholder='confirm password', value='')
+    .modal.fade#editBox
+      .modal-dialog.modal-lg
+        .modal-content
+          .modal-header
+            h4.modal-title#editTitle Modal title
+          .modal-body
+            .row#editBody
+          .modal-footer
+            .row
+              .col-xs-12.col-md-6
+                .input-group.form-group
+                  span.input-group-addon 修改密碼
+                  input.form-control#password(type='password', placeholder='password', value='')
+              .col-xs-12.col-md-6.form-group
+                .input-group
+                  span.input-group-addon 確認密碼
+                  input.form-control#confirm(type='password', placeholder='confirm password', value='')
 
-          button.btn.btn-default(data-dismiss='modal') Close
-          button.btn.btn-primary(data-dismiss='modal')#save Save
+            button.btn.btn-default(data-dismiss='modal') Close
+            button.btn.btn-primary(data-dismiss='modal')#save Save
 
 block append backboneTemplate
   script#tmplAccount(type='text/template')

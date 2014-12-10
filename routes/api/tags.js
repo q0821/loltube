@@ -98,11 +98,11 @@ router.put('/:tag_id', function(req, res){
     }},
     function(err, num, raw, results) {
       if(err){
-        res.status(400).end('Update tag error');
+        res.status(400).end(err.message);
       } else {
         Tag.findOne({ _id: tag_id}, function(err, result){
           if(err){
-            res.status(400).end('Some unknown error after updating the tag');
+            res.status(400).end(err.message);
           } else {
             res.status(201).json(result);
           }

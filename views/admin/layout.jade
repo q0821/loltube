@@ -9,6 +9,7 @@ html(lang='zh')
     block stylesheets
       link(rel='stylesheet', href='/bower/bootstrap/dist/css/bootstrap.min.css')
       link(rel='stylesheet', href='/bower/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css')
+      link(rel='stylesheet', href='/bower/material-design-icons/sprites/css-sprite/sprite-av-black.css')
       link(rel='stylesheet', href='/stylesheets/style.css')
   body
     block menu
@@ -29,12 +30,7 @@ html(lang='zh')
             li#logout
               a(href='/logout') Logout
 
-    .container
-      block title
-        .row.clearfix
-          .col-md-12.column
-            h1= title
-      block content
+    block content
 
     block backboneTemplate
       script#tmplMessage(type='text/template')

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "postinstall": "bower install",
-    "start": "nodemon ./bin/www --ignore bower_components/ --ignore node_modules --ignore public/ --ignore views/ --ignore test/ --ignore logs/",
+    "start": "nodemon --watch routes --watch models --watch config ./bin/www",
     "godmode": "node ./bin/www godmode"
   },
   "dependencies": {

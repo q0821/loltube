@@ -6,7 +6,7 @@ var app = app || {};
  */
 $(document).ready(function(){
   app.accountListView = new app.AccountListView({ 
-    el: '#accountList' 
+    el: '#contentTable' 
   });
   app.accountEditView = new app.AccountEditView({
     el: '#editBox',
