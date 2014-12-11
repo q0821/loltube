@@ -3,10 +3,11 @@
 var express = require('express');
 var router = express.Router();
 var Tag = require('../../models/tag');
+var Q = require('q');
 
 // Request all tags
 router.get('/', function(req, res){
-  var order = req.query.o ? req.query.o : '-lastModified';
+  var order = req.query.o ? req.query.o : '-_id';
   Tag.find({active: true}).sort(order).exec(function(err, results){
     if(err) {
       res.status(400).end('Get tag list error');
@@ -56,38 +57,33 @@ router.get('/:tag_id', function(req, res){
 
 router.post('/', function(req, res){
   var data = req.body;
-  Tag.find({name: data.name}).limit(1).exec( function(err, result){
-    if(err){
-    } else {
-      if(result.length > 0){ // Already exist a tag with same name
-        res.status(400).end('The tag: ' + data.name  + ' is already exist');
-      } else { // Save the new Tag to database
-        var tag = new Tag();
-        tag.name = data.name;
-        tag.lastModifier = req.user?req.user.username:"system";
-        tag.lastModified = Date.now();
-        tag.save(function(err){
-          if(err){
-            res.status(400).end('Insert tag error');
+  data.lastModifier = req.user?req.user.username:"system";
+  data.lastModified = Date.now();
+
+  checkNameExist(data.name)
+  .done(function(result){ 
+    data.name = result;
+    var tag = new Tag(data);
+    tag.save(function(err){
+      if(err){
+        res.status(400).end(err.message);
+      } else {
+        Tag.findOne(tag, function(err, result){
+          if(err){          
+            res.status(400).end(err.message);
           } else {
-            Tag.findOne(tag, function(err, result){
-              if(err){          
-                res.status(400).end('Some unknown error after saving the tag');
-              } else {
-                res.status(201).json(result);          
-              }
-            });
+            res.status(201).json(result);          
           }
         });
       }
-    }
+    });
   });
+
 });
 
 router.put('/:tag_id', function(req, res){
   var data = req.body;
   var tag_id = req.params.tag_id;
-  console.log('change '+tag_id+' to ' + data.active);
   Tag.update(
     {_id: tag_id},
     {$set: { 
@@ -122,5 +118,25 @@ router.delete('/:tag_id', function(req, res){
     }
   });  
 });
+
+function checkNameExist(name){
+
+    console.log('check name exist?');
+    var deferred = Q.defer();
+
+    Tag.count({name:name}, function(err, count){
+      if(err){
+        deferred.reject(err);
+      } else {
+        if(count>0) {
+          deferred.resolve(checkNameExist(name + ' copy'));
+        } else {
+          deferred.resolve(name);
+        }
+      }
+    });
+    return deferred.promise;
+
+}
 
 module.exports = router;

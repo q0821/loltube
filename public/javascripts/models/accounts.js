@@ -10,6 +10,7 @@ app.Account = Backbone.Model.extend({
   urlRoot: '/api/accounts',
   defaults: {
     // data from server
+    
     realname: '',
     username: '',     //use for login
     email: '',
@@ -19,6 +20,7 @@ app.Account = Backbone.Model.extend({
     lastModified: '',
     permission: 0,
     password: '',
+    
     active: true,
 
     // only within client

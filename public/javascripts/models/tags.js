@@ -11,6 +11,10 @@ var app = app || {};
 app.Tag = Backbone.Model.extend({
   urlRoot: '/api/tags',
   idAttribute: '_id',
+  defaults: {
+    active: true,
+    name: ''
+  },
   initialize: function(){
     this.toLocaleTime('lastModified');
   },

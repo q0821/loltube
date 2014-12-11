@@ -109,9 +109,6 @@ app.TagListView = Backbone.View.extend({
     this.collection.sort();
   },
     
-  // When after a successful edit, call this function to check if this 
-  // edited account a new account or an exist account. If new, add it
-  // into the collection.
   addOne: function(model){
     this.collection.add(model,{at: 0});
   },
@@ -119,33 +116,40 @@ app.TagListView = Backbone.View.extend({
   selectAll: function(e){
     var checks = this.$el.find('input[name="index[]"]');
     var isSelect = e.currentTarget.checked;
-    console.log(isSelect);
     checks.each(function(index){
       $(this).prop('checked', isSelect);
     });
   },
 
-/*             
+             
   copy: function(){
     console.log('going to copy');    
     var self = this;
     var selected = this.$el.find('input[name="index[]"]:checked');
     selected.each(function(index){
       var id = $(this).val();
-      var copy = new app.Account(self.collection.get(id).attributes);
+      var copy = new app.Tag(self.collection.get(id).attributes);
       copy.unset('_id');
       copy.save({},{
         success: function(model, res){
-          
+          self.collection.add(model,{at:0});
+          app.messageBoxView.model.set({
+            type: 'success',
+            title: 'SUCCESS',
+            content: 'Copy tag: <strong><u>' + model.get('name') + '</u></strong> success'
+          });
         },
         error: function(model, res){
-          console.log('error');
-          console.log('');
+          app.messageBoxView.model.set({
+            type: 'danger',
+            title: 'ERROR',
+            content: 'Copy tags: <strong><u>' + model.get('name') + '</u></strong> error, ' + res.responseText
+          });
         }  
       })
     });
   },
-*/
+
 
   recover: function(){
     var self = this;
@@ -160,7 +164,7 @@ app.TagListView = Backbone.View.extend({
           app.messageBoxView.model.set({
             type: 'success',
             title: 'SUCCESS',
-            content: 'Recover tags: <strong><u>' + model.get('username') + '</u></strong> success'
+            content: 'Recover tags: <strong><u>' + model.get('name') + '</u></strong> success'
           })
         },
         error: function(model, res){
@@ -190,7 +194,7 @@ app.TagListView = Backbone.View.extend({
           app.messageBoxView.model.set({
             type: 'success',
             title: 'SUCCESS',
-            content: 'Unactive tags: <strong><u>' + model.get('username') + '</u></strong> success'
+            content: 'Unactive tags: <strong><u>' + model.get('name') + '</u></strong> success'
           })
         },
         error: function(model, res){
@@ -219,7 +223,7 @@ app.TagListView = Backbone.View.extend({
           app.messageBoxView.model.set({
             type: 'success',
             title: 'SUCCESS',
-            content: 'Remove tags: <strong><u>' + model.get('username') + '</u></strong> success'
+            content: 'Remove tags: <strong><u>' + model.get('name') + '</u></strong> success'
           })
         },
         error: function(model, res){
@@ -246,6 +250,7 @@ app.TagToolbarView = Backbone.View.extend({
   events: {
     'click #recycleToggle': 'recycleToggle',
     'click #newBtn': 'add',
+    'click #copyBtn': 'copy',
     'click #removeBtn': 'remove',
     'click #recoverBtn': 'recover',
     'input #filter': 'filter'
@@ -269,6 +274,10 @@ app.TagToolbarView = Backbone.View.extend({
     app.tagEditView.render('新增Tag', newTag);
     $('#filter').val('');
     this.filter();
+  },
+
+  copy: function(){
+    app.tagListView.copy();
   },
 
   remove: function(){
