@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 var Tag = new Schema({
   name: String,
   lastModified: Date, 
-  lastModifier: String
+  lastModifier: String,
+  active: Boolean
 });
 
 module.exports = mongoose.model('Tag', Tag);

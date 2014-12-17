@@ -3,12 +3,14 @@ var Schema = mongoose.Schema;
 var passportLocalMongoose = require('passport-local-mongoose');
 
 var Account = new Schema({
+  realname: String,
   username: String,
-  password: String,
-  name: String,
+  email: String,
   created: Date,
-  last: Date,         // time for last login
-  promission: Number, // promission level
+  lastLogin: Date,         // time for last login
+  lastModifier: { type:String, default: ''},
+  lastModified: Date,
+  permission: Number, // promission level
   active: Boolean
 });
 
