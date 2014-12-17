@@ -2,10 +2,13 @@ extends ./layout
 
 
 block content
-  .container
-    .row.clearfix#tagsContainer
-      .col-md-12.column
+  .container#toolbar
+    .row.clearfix
+      .col-md-6.column
         h1 管理區 - Tags 
+      .col-md-6.column
+        span.label.label-danger.pull-right.hide#recycleLabel 回收桶
+    .row.clearfix
       .col-xs-12.column
         nav.navbar.navbar-default(role='navigation')
           .container-fluid
@@ -15,7 +18,7 @@ block content
                 span.icon-bar 
                 span.icon-bar 
                 span.icon-bar 
-            .navbar-collapse.collapse#toolbar(aria-expanded='false')
+            .navbar-collapse.collapse(aria-expanded='false')
               button.btn.btn-default.navbar-btn.navbar-left.hide#recoverBtn(type='button')
                 em.glyphicon.glyphicon-repeat &nbsp;回復
               button.btn.btn-default.navbar-btn.navbar-left#copyBtn(type='button')
@@ -65,16 +68,6 @@ block append backboneTemplate
     td: a.edit(href='#', data-toggle='modal', data-target='#editBox') <%= name %>
     td <%= lastModifier %>
     td <%= lastModifiedLocale %>
-
-  script#tmplMessageBox(type='text/template')
-    .panel(class!='panel-<%= type %>')
-      .panel-heading
-        h3.panel-title <%= title %>
-      .panel-body <%= content %>&nbsp;&nbsp;&nbsp;&nbsp;
-        <% if(undoable){ %>
-        a#undo(href='#'): u
-          em.glyphicon.glyphicon-repeat UNDO
-        <% } %>
 
   script#tmplEditBox(type='text/template')
     .col-xs-12
