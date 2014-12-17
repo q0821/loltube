@@ -6,36 +6,45 @@ html(lang='zh')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     meta(name='keywords', contetn= keywords)
     meta(name='description', content= description)
-    script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
-    script(type='text/javascript', src='/bower/underscore/underscore-min.js')
-    script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
-    script(type='text/javascript', src='/bower/backbone/backbone.js')
-    script(type='text/javascript', src='/javascripts/users.js')
-    link(rel='stylesheet', href='/bower/bootstrap/dist/css/bootstrap.min.css')
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    block scripts
+    block stylesheets
+      link(rel='stylesheet', href='/bower/bootstrap/dist/css/bootstrap.min.css')
+      link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    .container
-      block menu
-        .row.clearfix
-          .col-md-12.column#mainMenu
-            ul.nav.nav-pills
-              li
-                a(href='index') Home
-              li.disabled
-                a(href='#') Items
-              li.disabled
-                a(href='#') Menus
-              li
-                a(href='tags') Tags
-              li.navbar-right#accountContainer
-                a(href='/logout') Logout
+    block menu
+      nav.navbar.navbar-inverse.navbar-static-top(role='navigation')
+        .container
+          ul.nav.navbar-nav
+            li#index
+              a(href='index') Home
+            li#accounts
+              a(href='accounts') Accounts
+            li#items
+              a(href='#') Items
+            li#menus
+              a(href='#') Menus
+            li#tags
+              a(href='tags') Tags
+          ul.nav.navbar-nav.navbar-right
+            li#logout
+              a(href='/logout') Logout
 
-      block title
-        .row.clearfix
-          .col-md-12.column
-            h1= title
-
-      block content
+    block content
 
     block backboneTemplate
+      script#tmplMessage(type='text/template')
+        .panel(class!='panel-<%= type %>')
+          .panel-heading
+            h3.panel-title <%= title %>
+          .panel-body <%= content %>&nbsp;&nbsp;&nbsp;&nbsp;
+            <% if(app.tagView.messageModel.get('undoable')){ %>
+            a#undo(href='#'): u
+              em.glyphicon.glyphicon-repeat UNDO
+            <% } %>
+    block scripts
+      script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
+      script(type='text/javascript', src='/bower/underscore/underscore-min.js')
+      script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
+      script(type='text/javascript', src='/bower/backbone/backbone.js')
+      script(type='text/javascript', src='/javascripts/messagebox.js')
+      script(type='text/javascript')
+        |$('##{active}').addClass('active');

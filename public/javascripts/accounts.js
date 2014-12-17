@@ -1,25 +1,20 @@
 'use strict';
+var app = app || {};
+
 /*
  * Setup
  */
-var app = app || {};
-
-
-/*
- * Bootup
- */
 $(document).ready(function(){
-  app.tagListView = new app.TagListView({
+  app.accountListView = new app.AccountListView({ 
     el: '#contentTable' 
   });
-  app.tagEditView = new app.TagEditView({
+  app.accountEditView = new app.AccountEditView({
     el: '#editBox',
   });
-  app.tagToolbarView = new app.TagToolbarView({
+  app.accountToolbarView = new app.AccountToolbarView({
     el: '#toolbar'
   });
   app.messageBoxView = new app.MessageBoxView({ 
     el: '#messageBox'
   });
 });
-

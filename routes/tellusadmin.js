@@ -17,24 +17,47 @@ router.get('/', function(req, res){
   });
 });
 
-router.post('/', passport.authenticate('local', {
-  successRedirect: '/tellusadmin/index',
-  failureRedirect: '/tellusadmin'  
-}));
+router.post('/', passport.authenticate('local', {failureRedirect: '/tellusadmin'}), function(req, res){
+  Account.update(
+    {username: req.user.username}, 
+    {$set: 
+      {lastLogin: Date.now()}
+    },
+    function(err, num, raw, results){
+      if(err){
+      } else {
+        res.redirect('/tellusadmin/index');
+      } 
+    }
+  );  
+});
 
 router.get('/index', isAuth, function(req, res){
-  console.log('user promission: ' + req.user.promission);
+  //console.log('user permission: ' + req.user.permission);
   res.render('admin/index', {
     title: '管理區 - 首頁',
+    active: req.path.slice(1),
     username: req.user.username,
-    promission: req.user.promission
+    permission: req.user.permission
   });
 })
 
 router.get('/tags', isAuth, function(req, res){
-    res.render('admin/tags', {
-      title: "管理區 - Tags"
-    });    
+  res.render('admin/tags', {
+    title: "管理區 - Tags",
+    active: req.path.slice(1),
+    username: req.user.username,
+    permission: req.user.permission
+  });    
+});
+
+router.get('/accounts', isAuth, function(req, res){
+  res.render('admin/accounts', {
+    title: '管理區 - Accounts', 
+    active: req.path.slice(1),
+    username: req.user.username,
+    permission: req.user.permission
+  });  
 });
 
 router.get('/godmode', isGodmode, function(req, res){
@@ -44,7 +67,7 @@ router.get('/godmode', isGodmode, function(req, res){
 router.post('/godmode', isGodmode, function(req, res){
   Account.register(new Account({ 
     username : req.body.username,
-    promission : 1, 
+    permission : 1, 
     active : true
   }), req.body.password, function(err, account) {
     if (err) {
@@ -60,9 +83,10 @@ router.post('/godmode', isGodmode, function(req, res){
 
 
 function isAuth(req, res, next){
-  if(req.isAuthenticated()) {
+  if(req.isAuthenticated() && req.user.permission > 0) {
     return next();
   }
+
   res.redirect('/tellusadmin');
 }
 

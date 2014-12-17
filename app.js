@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var mongoose = require('mongoose');
+var mongodb = require('mongodb');
 var passport = require('passport'); 
 var LocalStrategy = require('passport-local').Strategy;
 var app = express();
@@ -31,8 +32,8 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser(config.cookie_secret));
-app.use(session({secret: config.cookieSecret, resave: true, saveUninitialized: true}));
+app.use(cookieParser(config.secret));
+app.use(session({secret: config.secret, resave: true, saveUninitialized: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -47,15 +48,22 @@ app.use(function(req, res, next) {
 });
 
 // Routing
-var tags = require('./routes/api/tags');
 var tellusadmin = require('./routes/tellusadmin');
 var angularadmin = require('./routes/angularadmin');
+
+//Routing for APIs
+var tags = require('./routes/api/tags');
+var accounts = require('./routes/api/accounts');
+
 app.use('/api/tags', tags);
+app.use('/api/accounts', accounts);
+
+//Routting for control panel
 app.use('/tellusadmin', tellusadmin);
 app.use('/angularadmin', angularadmin);
 app.get('/logout', function(req, res){
   req.logout();
-  res.redirect('/');
+  res.redirect('/tellusadmin');
 });
 
 // catch 404 and forward to error handler
