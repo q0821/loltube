@@ -2,10 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var Tag = new Schema({
-  name: String,
+  name: {type: String, unique: true},
   lastModified: Date, 
   lastModifier: String,
-  active: Boolean
+  active: {type: Boolean, default: true}
 });
 
 module.exports = mongoose.model('Tag', Tag);

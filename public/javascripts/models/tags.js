@@ -33,11 +33,24 @@ app.Tag = Backbone.Model.extend({
       this.set(attr, '');
     }
   }
-
 });
 
 app.TagCollection = Backbone.Collection.extend({
   model: app.Tag, 
-  url: '/api/tags',
+  initialize: function(){
+    this.page = 1;
+    this.perPage = 50;
+    this.order = '-_id';
+  },
+  url: function(){
+    //return '/api/tags/page/' + this.page + '/order/' + this.order;
+    return '/api/tags';
+  }
 });   
+
+app.Tags = Backbone.PageableCollection.extend({
+  model: app.Took,
+  url: '/api/tags'
+});
+
 

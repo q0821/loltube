@@ -80,7 +80,6 @@ app.AccountListView = Backbone.View.extend({
   recycleToggle: function() {
     this.$selectAll.prop('checked', false);
     this.recycleMode = !this.recycleMode;
-    $('#newBtn').prop('disabled', this.recycleMode);
     if(this.recycleMode)
       this.collection.url = '/api/accounts/recycle';
     else
@@ -268,6 +267,7 @@ app.AccountToolbarView = Backbone.View.extend({
     this.$el.find('#recoverBtn').toggleClass('hide');
     this.$el.find('#recycleLabel').toggleClass('hide');
     this.recycleMode = !this.recycleMode;
+    this.$el.find('#newBtn').prop('disabled', this.recycleMode);
     app.accountListView.recycleToggle(); 
   },
 

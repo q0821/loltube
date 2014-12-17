@@ -48,8 +48,17 @@ app.TagListView = Backbone.View.extend({
     this.$selectAll = this.$el.find('#selectAll');
     this.recycleMode = false;
     this.filterText = '';
-    this.order = '_id';
     this.collection = new app.TagCollection();
+    this.tags = new app.Tags([], {
+      state: {
+        firstPage: 0,
+        currentPage: 0
+      },
+
+      queryParams: {
+        
+      }  
+    });
     this.renderCollection = new app.TagCollection();
     this.listenTo(this.collection, 'add reset sort remove', this.render);
     this.collection.fetch({reset: true});
@@ -123,7 +132,6 @@ app.TagListView = Backbone.View.extend({
 
              
   copy: function(){
-    console.log('going to copy');    
     var self = this;
     var selected = this.$el.find('input[name="index[]"]:checked');
     selected.each(function(index){
@@ -150,93 +158,104 @@ app.TagListView = Backbone.View.extend({
     });
   },
 
-
   recover: function(){
     var self = this;
     var selected = this.$el.find('input[name="index[]"]:checked');
     var isSuccess = true;
+    var tagIdList = [];
+    var tagNameList = [];
     selected.each(function(index){
       var id = $(this).val();
-      var tag = self.collection.get(id);
-      tag.save({active: true}, {
-        success: function(model, res){
-          self.collection.remove(model);
-          app.messageBoxView.model.set({
-            type: 'success',
-            title: 'SUCCESS',
-            content: 'Recover tags: <strong><u>' + model.get('name') + '</u></strong> success'
-          })
-        },
-        error: function(model, res){
-          isSuccess = false
-          app.messageBoxView.model.set({
-            type: 'danger',
-            title: 'ERROR',
-            content: res.responseText
-          })
-        }  
-      });
-      return isSuccess;
+      tagIdList.push(id);
+      tagNameList.push(self.collection.get(id).get('name'));
     });
 
+    var recoverTag = new Backbone.Model({ id:tagIdList.join() });
+    recoverTag.urlRoot = '/api/tags/recover';
+    recoverTag.save({}, {
+      success: function(model, res){
+        //tagIdList.forEach( function(element, index){ 
+          self.collection.fetch({reset:true});
+        //});
+        app.messageBoxView.model.set({
+          type: 'success',
+          title: 'SUCCESS',
+          content: 'Recover tags: <strong><u>' + tagNameList.join(', ') + '</u></strong> success'
+        });
+      },
+      error: function(model, res){
+        app.messageBoxView.model.set({
+          type: 'danger',
+          title: 'ERROR',
+          content: res.responseText
+        });
+      }    
+    });
   },
 
   unactive: function(){
     var self = this;
     var selected = this.$el.find('input[name="index[]"]:checked');
-    var isSuccess = true;
+    var tagIdList = [];
+    var tagNameList = [];
     selected.each(function(index){
       var id = $(this).val();
-      var tag = self.collection.get(id);
-      tag.save({active: false}, {
-        success: function(model, res){
-          self.collection.remove(model);
-          app.messageBoxView.model.set({
-            type: 'success',
-            title: 'SUCCESS',
-            content: 'Unactive tags: <strong><u>' + model.get('name') + '</u></strong> success'
-          })
-        },
-        error: function(model, res){
-          isSuccess = false
-          app.messageBoxView.model.set({
-            type: 'danger',
-            title: 'ERROR',
-            content: res.responseText
-          })
-        }  
-      });
-      return isSuccess;
+      tagIdList.push(id);
+      tagNameList.push(self.collection.get(id).get('name'));
+    });
+    var unactiveTag = new Backbone.Model({ id: tagIdList.join() });
+    unactiveTag.urlRoot = '/api/tags/unactive';
+    unactiveTag.destroy({
+      success: function(model, res){
+        //tagIdList.forEach( function(element, index){ 
+          self.collection.fetch({reset:true}); 
+        //});
+        app.messageBoxView.model.set({
+          type: 'success',
+          title: 'SUCCESS',
+          content: 'Unactive tags: <strong><u>' + tagNameList.join(', ') + '</u></strong> success'
+        });
+      },
+      error: function(model, res){
+        app.messageBoxView.model.set({
+          type: 'danger',
+          title: 'ERROR',
+          content: res.responseText
+        });
+      }
     });
   },
 
   remove: function(){
     var self = this;
     var selected = this.$el.find('input[name="index[]"]:checked');
-    var isSuccess = true;
+    var tagIdList = [];
+    var tagNameList = [];
     selected.each(function(index){
       var id = $(this).val();
-      var tag = self.collection.get(id);
-      tag.destroy({
-        success: function(model, res){
-          self.collection.remove(model);
-          app.messageBoxView.model.set({
-            type: 'success',
-            title: 'SUCCESS',
-            content: 'Remove tags: <strong><u>' + model.get('name') + '</u></strong> success'
-          })
-        },
-        error: function(model, res){
-          isSuccess = false;
-          app.messageBoxView.model.set({
-            type: 'danger',
-            title: 'ERROR',
-            content: res.responseText
-          })
-        }  
-      });
-      return isSuccess;
+      tagIdList.push(id);
+      tagNameList.push(self.collection.get(id).get('name'));
     });
+    var delTag = new Backbone.Model({ id: tagIdList.join() });
+    delTag.urlRoot = '/api/tags/delete';
+    delTag.destroy({
+      success: function(model, res){
+        tagIdList.forEach( function(element){ self.collection.remove(element); });
+        app.messageBoxView.model.set({
+          type: 'success',
+          title: 'SUCCESS',
+          content: 'Remove tags: <strong><u>' + tagNameList.join(', ') + '</u></strong> success'
+        });
+      },
+      error: function(model, res){
+        app.messageBoxView.model.set({
+          type: 'danger',
+          title: 'ERROR',
+          content: res.responseText
+        });
+      }
+    });
+
   }
 
 });

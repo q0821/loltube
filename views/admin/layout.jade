@@ -31,20 +31,21 @@ html(lang='zh')
     block content
 
     block backboneTemplate
-      script#tmplMessage(type='text/template')
-        .panel(class!='panel-<%= type %>')
+      script#tmplMessageBox(type='text/template')
+        .panel#messagePanel(class!='panel-<%= type %>')
           .panel-heading
             h3.panel-title <%= title %>
+              button.close(type='button', data-target='#messagePanel', data-dismiss="alert")
+                span(aria-hidden='true') &times;
+                span.sr-only Close
           .panel-body <%= content %>&nbsp;&nbsp;&nbsp;&nbsp;
-            <% if(app.tagView.messageModel.get('undoable')){ %>
-            a#undo(href='#'): u
-              em.glyphicon.glyphicon-repeat UNDO
-            <% } %>
     block scripts
-      script(type='text/javascript', src='/bower/jquery/dist/jquery.min.js')
-      script(type='text/javascript', src='/bower/underscore/underscore-min.js')
-      script(type='text/javascript', src='/bower/bootstrap/dist/js/bootstrap.min.js')
-      script(type='text/javascript', src='/bower/backbone/backbone.js')
-      script(type='text/javascript', src='/javascripts/messagebox.js')
-      script(type='text/javascript')
+      script(src='/bower/jquery/dist/jquery.min.js')
+      script(src='/bower/underscore/underscore-min.js')
+      script(src='/bower/bootstrap/dist/js/bootstrap.min.js')
+      script(src='/bower/backbone/backbone.js')
+      script(src='/bower/typeahead.js/dist/typeahead.bundle.min.js')
+      script(src='/bower/backbone.paginator/lib/backbone.paginator.min.js')
+      script(src='/javascripts/messagebox.js')
+      script
         |$('##{active}').addClass('active');
