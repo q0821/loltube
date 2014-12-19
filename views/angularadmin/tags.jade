@@ -1,51 +1,63 @@
 extends ./layout
 
 block scripts
-  script(type='text/javascript', src='/javascripts/angulartags.js')
+  script(src='/javascripts/angulartags.js')
 
 block content
   .row.clearfix#tagContainer(ng-app="tagsAPP")
-    .row.clearfix(ng-controller="tagsListCtrl")
-      .col-md-1.column
-        span.input-group-btn
-          button.btn.btn-default#copyTag(type='button')
-            em.glyphicon.glyphicon-tags
-             　複製
-      .col-md-1.column
-        span.input-group-btn
-          button.btn.btn-default#delTag(type='button',ng-click="delTag()")
-            em.glyphicon.glyphicon-trash
-              刪除
-      .col-md-10.column
-        .input-group
-          input(type='text', class='form-control', id='newTagName', autocomplete='off',ng-model="formData.name")
-          span.input-group-btn
-            button.btn.btn-default#newTagBtn(type='button',ng-click="createTag()")
-              em.glyphicon.glyphicon-plus
-              新增
+    .row.clearfix(ng-controller="tagsListCtrl",data-ng-init="fetchTags()")
+      nav.navbar.navbar-default(role='navigation')
+          .container-fluid
+            .navbar-header
+              button.navbar-toggle.collapsed(data-toggle='collapse', data-target='#toolbar', aria-expanded='false')
+                span.sr-only Toggle
+                span.icon-bar 
+                span.icon-bar 
+                span.icon-bar 
+            .navbar-collapse.collapse(aria-expanded='false')
+              button.btn.btn-default.navbar-btn.navbar-left#recoverBtn(type='button',ng-click="recover()",ng-show="recycleState")
+                em.glyphicon.glyphicon-repeat &nbsp;回復
+              button.btn.btn-default.navbar-btn.navbar-left#copyBtn(type='button',ng-click="copy()")
+                em.glyphicon.glyphicon-tags &nbsp;複製
+              button.btn.btn-default.navbar-btn.navbar-left#removeBtn(type='button',ng-click="del()")
+                em.glyphicon.glyphicon-trash &nbsp;刪除
+              form.navbar-form.navbar-left
+                .input-group
+                  input.form-control(type='text',ng-model="formData.name", autofocus='autofocus', autocomplete='off', placeholder='Tag名稱')
+                  span.input-group-btn
+                    button.btn.btn-default#newBtn(data-toggle='modal', data-target='#editBox',ng-click="createTag()")
+                      em.glyphicon.glyphicon-plus &nbsp;新增
+              button.btn.btn-default.navbar-btn.navbar-right#recycleToggle(ng-click="recycleState=!recycleState;fetchTags()",ng-class="{ 'btn-danger' : recycleState }") 回收桶
       .col-md-12.column
-        #messageBox
+        #messageBox(ng-show="message.content")
+          .panel(ng-class="['panel-'+message.type]")
+            .panel-heading
+              h3.panel-title {{message.title}}
+            .panel-body {{message.content}}
       .col-md-12.column
         table.table.table-hover
           thead
             tr
               th
-                input(type='checkbox', name='selectAll')          
+                input(type='checkbox', name='selectAll',ng-model="selectAllState",ng-click="selectAll()")
               th #
               th
-                a.reorder(href='#', data-by='name') name
+                a.reorder(href='#', data-by='name', ng-click="orderby='name'; reverse=!reverse") Tag Name 
+                  span(ng-show="orderby=='name' && reverse==true") ∇
+                  span(ng-show="orderby=='name' && reverse==false") ∆
               th 
-                a.reorder(href='#', data-by='lastModifier') lastModifier
+                a.reorder(href='#', data-by='lastModifier', ng-click="orderby='lastModifier'; reverse=!reverse") 最後修改者 
+                  span(ng-show="orderby=='lastModifier' && reverse==true") ∇
+                  span(ng-show="orderby=='lastModifier' && reverse==false") ∆
               th
-                a.reorder(href='#', data-by='lastModified') lastModified
+                a.reorder(href='#', data-by='lastModified', ng-click="orderby='lastModified'; reverse=!reverse") 最後修改時間 
+                  span(ng-show="orderby=='lastModified' && reverse==true") ∇
+                  span(ng-show="orderby=='lastModified' && reverse==false") ∆
           tbody#tagList
-            tr(ng-repeat="tag in tags")
+            tr(ng-repeat="tag in tags | orderBy:orderby:reverse")
               td
-                input(type="checkbox",checkbox-group,value="{{ tag._id }}")
-              td
-              td
-                {{ tag.name }}
-              td
-                {{ tag.lastModifier }}
-              td
-                {{ tag.lastModified | date:'yyyy/MM/dd HH:mm:ss' }}
+                input(type="checkbox",checkbox-group,value="{{ tag._id }}",ng-checked="selectedTagsIdList.indexOf(tag._id) > -1",ng-click="toggleSelection(tag._id,tag.name);")
+              td {{ $index + 1 }}
+              td {{ tag.name }}
+              td {{ tag.lastModifier }}
+              td {{ tag.lastModified | date:'yyyy/MM/dd HH:mm:ss' }}
