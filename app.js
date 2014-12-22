@@ -6,7 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var mongoose = require('mongoose');
-var mongodb = require('mongodb');
 var passport = require('passport'); 
 var LocalStrategy = require('passport-local').Strategy;
 var app = express();
@@ -54,9 +53,12 @@ var angularadmin = require('./routes/angularadmin');
 //Routing for APIs
 var tags = require('./routes/api/tags');
 var accounts = require('./routes/api/accounts');
-
+var items = require('./routes/api/items');
+var itemTypes = require('./routes/api/itemTypes');
 app.use('/api/tags', tags);
 app.use('/api/accounts', accounts);
+app.use('/api/items', items);
+app.use('/api/itemtypes', itemTypes);
 
 //Routting for control panel
 app.use('/tellusadmin', tellusadmin);

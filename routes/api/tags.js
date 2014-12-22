@@ -2,7 +2,7 @@
 
 var express = require('express');
 var router = express.Router();
-var Tag = require('../../models/tag');
+var Tag = require('../../models/tag.js');
 var Q = require('q');
 
 // Request all tags
@@ -45,7 +45,7 @@ router.get('/page/:page_index/order/:order', function(req, res){
 
 router.post('/', function(req, res){
   var data = req.body;
-  data.lastModifier = req.user?req.user.username:"system";
+  data.lastModifier = req.user ? req.user.username : 'system';
   data.lastModified = Date.now();
 
   new Q(getUniqueName(data.name, 0))
@@ -67,6 +67,16 @@ router.post('/', function(req, res){
   })
   .catch(function(err){
     res.status(400).end(err.message);
+  });
+});
+
+router.get('/:tag_id', function(req, res){
+  var tag_id = req.params.tag_id;
+  Tag.findById( tag_id, function(err, result){
+    if(err)
+      res.status(400).end(err.message);
+    else
+      res.status(200).json(result);
   });
 });
 
@@ -103,6 +113,24 @@ router.get('/autocomplete/', function(req, res){
 
 router.post('/copy/:tag_ids', function(req, res){
   var tagIdArray = req.params.tag_ids.split(',');
+  var where = { '_id': { '$in': tagIdArray}};
+  var success = true;
+  Tag.find( where, function(err, results){
+    if(err)
+      res.status(400).end(err.message);
+    else{
+      results.forEach(function(element){
+        element._id = undefined;
+        Tag.save(function(err){
+          res.status(400).end(err.message);
+          success = false;   
+        })
+        return success;
+      });
+      if(success)
+        res.status(201).json({message: 'copy success'});
+    }
+  })
 });
 
 router.put('/recover/:tag_ids', function(req, res){
