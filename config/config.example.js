@@ -1,5 +1,5 @@
 module.exports = {
-  cookieSecret: 'catinthecookie',
+  secret: 'catinthecookie',
   apiKey: '5566isTheBest',
   db: {
     production: 'mongodb://localhost:27017/LOLTube',
