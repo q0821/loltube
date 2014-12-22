@@ -3,8 +3,6 @@
 var express = require('express');
 var router = express.Router();
 var Item = require('../../models/item.js');
-var errHandler = require('./errhandler.js');
-
 
 router.post('/', function(req, res){
   var data = req.body;
