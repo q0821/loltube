@@ -47,7 +47,7 @@ app.TagListView = Backbone.View.extend({
     this.$body = this.$el.find('tbody');
     this.$selectAll = this.$el.find('#selectAll');
     this.recycleMode = false;
-    this.filterText = '';
+    this.filterArray = [];
     this.collection = new app.TagCollection();
     this.tags = new app.Tags([], {
       state: {
@@ -74,7 +74,12 @@ app.TagListView = Backbone.View.extend({
     var self = this;
     this.$body.empty();
     var renderArray = this.collection.filter(function(model){
-      return model.get('name').indexOf(self.filterText ,0) > -1 ;
+      var result = true;
+      self.filterArray.forEach(function(filterText){
+        result = result && model.get('name').indexOf(filterText, 0) > -1;
+        return !result;
+      });
+      return result;
     });
     renderArray.forEach(function(model, index){
         var view = new app.TagView({model: model});
@@ -94,9 +99,10 @@ app.TagListView = Backbone.View.extend({
     this.collection.fetch({reset:true});
   },
 
-  filter: function(filterText){
+  filter: function(filterList){
     this.$selectAll.prop('checked', false);
-    this.filterText = filterText;
+    this.filterArray = filterList.split(',');
+    console.log(this.filterArray);
     this.render();
   },
 
@@ -130,7 +136,6 @@ app.TagListView = Backbone.View.extend({
     });
   },
 
-             
   copy: function(){
     var self = this;
     var selected = this.$el.find('input[name="index[]"]:checked');
@@ -264,6 +269,10 @@ app.TagListView = Backbone.View.extend({
 app.TagToolbarView = Backbone.View.extend({
   initialize: function(){
     this.recycleMode = false;
+    this.$recycleToggle = this.$el.find('#recycleToggle');
+    this.$recoverBtn = this.$el.find('#recoverBtn');
+    this.$recycleLabel = this.$el.find('#recycleLabel');
+    this.$autoComplete = this.$el.find('#autoComplete');
   },
 
   events: {
@@ -271,28 +280,25 @@ app.TagToolbarView = Backbone.View.extend({
     'click #newBtn': 'add',
     'click #copyBtn': 'copy',
     'click #removeBtn': 'remove',
-    'click #recoverBtn': 'recover',
-    'input #filter': 'filter'
+    'click #recoverBtn': 'recover'
   },
 
   recycleToggle: function(){
-    this.$el.find('#recycleToggle').toggleClass('active');
-    this.$el.find('#recoverBtn').toggleClass('hide');
-    this.$el.find('#recycleLabel').toggleClass('hide');
+    this.$recycleToggle.toggleClass('active');
+    this.$recoverBtn.toggleClass('hide');
+    this.$recycleLabel.toggleClass('hide');
     this.recycleMode = !this.recycleMode;
     app.tagListView.recycleToggle(); 
   },
 
   filter: function(){
-    app.tagListView.filter($('#filter').val());
+    app.tagListView.filter(this.$autoComplete.val());
+
   },
 
   add: function(){
-    var newTagName = this.$el.find('#filter').val()
-    var newTag = new app.Tag({ name: newTagName });
+    var newTag = new app.Tag({ name: '' });
     app.tagEditView.render('新增Tag', newTag);
-    $('#filter').val('');
-    this.filter();
   },
 
   copy: function(){

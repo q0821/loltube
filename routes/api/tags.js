@@ -29,14 +29,23 @@ router.get('/recycle', function(req, res){
   });  
 });
 
+router.get('/autocomplete',function(req,res){
+  Tag.aggregate({$project: {name:1}}).exec(function(err, results){
+    if(err)
+      res.status(400).end(err.message);
+    else
+      res.status(200).json(results);
+  });
+});
+
 // Request tags by page
-router.get('/page/:page_index/order/:order', function(req, res){
-  var order = req.params.order;
-  var perPage = 50; 
+router.get('/page/:page_index', function(req, res){
+  var order = req.query.o ? req.query.o : '-_id';
+  var perPage = req.query.per ? req.query.per : 50;
   var pageIndex = req.params.page_index;
   Tag.find({active: true}).sort(order).skip((pageIndex-1)*perPage).limit(perPage).exec(function(err, results){
     if(err) {
-      res.status(400).end('Getting tag list with page+' + pageIndex + ' error');
+      res.status(400).end(err.message);
     } else {
       res.status(200).json(results);
     }
@@ -101,16 +110,10 @@ router.put('/:tag_id', function(req, res){
 
 });
 
-//// handlers for autocomplete ////
-router.get('/autocomplete/', function(req, res){
-  var input = req.query.q;
-  console.log(input);
-});
 
 
 
 //// handlers for bulk request ////
-
 router.post('/copy/:tag_ids', function(req, res){
   var tagIdArray = req.params.tag_ids.split(',');
   var where = { '_id': { '$in': tagIdArray}};

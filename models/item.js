@@ -1,11 +1,11 @@
 'use strict';
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var ObjectId = Schema.ObjectId
+var ObjectId = Schema.Types.ObjectId
 var ItemType = require('./itemType.js');
 var Tag = require('./tag.js');
 
-var Item = mongoose.Schema({
+var Item = Schema({
   title: String,
   keyword: String,
   des: String,
@@ -21,4 +21,4 @@ var Item = mongoose.Schema({
   lastModifier: String // auto-generate by req.use
 });
 
-module.exports = mongoose.model('item', Item);
+module.exports = mongoose.model('Item', Item);
