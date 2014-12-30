@@ -21,17 +21,16 @@ block content
             .navbar-collapse.collapse(aria-expanded='false')
               button.btn.btn-default.navbar-btn.navbar-left.hide#recoverBtn(type='button')
                 em.glyphicon.glyphicon-repeat &nbsp;回復
+              button.btn.btn-default.navbar-btn.navbar-left#newBtn(type='button', data-toggle='modal', data-target='#editBox')
+                em.glyphicon.glyphicon-plus &nbsp;新增
               button.btn.btn-default.navbar-btn.navbar-left#copyBtn(type='button')
                 em.glyphicon.glyphicon-tags &nbsp;複製
               button.btn.btn-default.navbar-btn.navbar-left#removeBtn(type='button')
                 em.glyphicon.glyphicon-trash &nbsp;刪除
               form.navbar-form.navbar-left
-                .input-group
-                  input.form-control#filter(type='text', autofocus='autofocus', autocomplete='off', placeholder='Tag名稱') 
-                  span.input-group-btn
-                    button.btn.btn-default#newBtn(type='button', data-toggle='modal', data-target='#editBox')
-                      em.glyphicon.glyphicon-plus &nbsp;新增
+                input.form-control#autoComplete(type='text', autocomplete='off', placeholder='Tag名稱', data-role='tagsinput')
               button.btn.btn-default.navbar-btn.navbar-right#recycleToggle 回收桶
+
 
       .col-xs-12.column#messageBox
       .col-xs-12.column
@@ -76,6 +75,32 @@ block append backboneTemplate
         input.form-control#tagName(type='text', placeholder='Tag Name', value!='<%= name %>')
 
 block append scripts
+  script
+    | var tags = new Bloodhound({
+    |   datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+    |   queryTokenizer: Bloodhound.tokenizers.whitespace,
+    |   prefetch: {
+    |     url: 'http://loltube.shingotw.me/api/tags/autocomplete',
+    |     filter: function(tag){
+    |       return $.map(tag, function(tag){
+    |         return {name: tag.name};
+    |       });
+    |     }
+    |   }
+    | });
+    | tags.initialize();
+    | $('#autoComplete').tagsinput({
+    |   maxChars: 20,
+    |   typeaheadjs: {
+    |     name: 'tags', 
+    |     displayKey: 'name',
+    |     valueKey: 'name',
+    |     source: tags.ttAdapter()
+    |   }
+    | });
+    | $('#autoComplete').on( 'itemAdded itemRemoved', function(event){
+    |   app.tagListView.filter($('#autoComplete').val());
+    | });
   script(type='text/javascript', src='/javascripts/tags.js')
   script(type='text/javascript', src='/javascripts/models/tags.js')
   script(type='text/javascript', src='/javascripts/views/tags.js')
